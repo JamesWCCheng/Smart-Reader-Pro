@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Reader v1.0 Pro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        anime: ['Bangers', 'cursive'],
+                    },
+                    colors: {
+                        brand: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95' }
+                    },
+                    animation: {
+                        'dice-drop': 'diceDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        'combo-pop': 'popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
+                        'flash-red': 'flashRed 0.5s ease-out',
+                        'flash-gold': 'flashGold 1s ease-out infinite',
+                        'card-shake': 'shakeHorizontal 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                        'hiker-bounce': 'bounce 0.5s infinite',
+                    },
+                    keyframes: {
+                        diceDrop: { 
+                            '0%': { transform: 'translateY(-300px) rotate(0deg) scale(0.5)', opacity: '0' }, 
+                            '60%': { transform: 'translateY(10px) rotate(720deg) scale(1.1)', opacity: '1' },
+                            '80%': { transform: 'translateY(-5px) rotate(720deg) scale(1)' },
+                            '100%': { transform: 'translateY(0) rotate(720deg) scale(1)' } 
+                        },
+                        popIn: { '0%': { transform: 'scale(0) rotate(-10deg)', opacity: '0' }, '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' } },
+                        flashRed: { '0%': { backgroundColor: 'rgba(239, 68, 68, 0.5)' }, '100%': { backgroundColor: 'white' } },
+                        flashGold: { '0%, 100%': { boxShadow: '0 0 10px #fbbf24' }, '50%': { boxShadow: '0 0 20px #f59e0b' } },
+                        shakeHorizontal: { '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(4px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(6px, 0, 0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f1f5f9; color: #1e293b; }
+        input, select, button, textarea { pointer-events: auto !important; z-index: 9999 !important; }
+        .word-span { cursor: copy; border-radius: 4px; padding: 2px 1px; transition: background-color 0.1s; display: inline-block; }
+        .word-span:hover { background-color: #ddd6fe; color: #4c1d95; }
+        .cursor-copy { cursor: copy; }
+        .highlight-current { background-color: #f97316 !important; color: white !important; border-radius: 4px; box-shadow: 0 0 0 2px #f97316; transform: scale(1.05); z-index: 10; position: relative; }
+        .clean-card { background: white; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 1rem; }
+        .loader { border: 3px solid #e2e8f0; border-top: 3px solid #7c3aed; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .article-image { width: 100%; height: auto; border-radius: 1rem; margin: 2rem 0; }
+        .rank-badge { font-family: 'Bangers', cursive; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
+        .mountain-track-bg { background: linear-gradient(to right, #ecfccb 0%, #a5f3fc 50%, #e0e7ff 100%); border: 1px solid #cbd5e1; }
+        .climber-icon { transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); position: absolute; top: -14px; font-size: 2rem; filter: drop-shadow(2px 2px 0px white); z-index: 50; }
+        
+        /* New Dice Style */
+        .dice-container { perspective: 1000px; }
+        .dice-icon-large { font-size: 3rem; color: #7c3aed; filter: drop-shadow(0 4px 6px rgba(124, 58, 237, 0.3)); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans overflow-x-hidden">
+
+    <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] bg-slate-800 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold flex items-center gap-2 pointer-events-none opacity-0 transition-opacity">
+        <i class="fa-solid fa-check text-emerald-400"></i> <span id="toast-msg">Copied!</span>
+    </div>
+
+    <div id="selection-popup" class="hidden fixed z-[200] bg-slate-800 text-white rounded-lg shadow-xl overflow-hidden max-w-sm">
+        <button id="popup-trigger" class="hidden w-full px-4 py-2 text-sm font-bold hover:bg-slate-700 flex items-center gap-2" onclick="translateSelection()">
+            <i class="fa-solid fa-language"></i> Translate
+        </button>
+        <div id="popup-content" class="hidden p-4">
+            <div class="flex justify-between items-center mb-2 border-b border-slate-600 pb-2">
+                <span class="text-xs font-bold text-slate-400 uppercase">Translation</span>
+                <button onclick="closePopup()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="popup-result" class="text-slate-200 text-sm leading-relaxed"></div>
+            <div id="popup-loader" class="hidden flex justify-center py-2"><div class="loader border-t-white"></div></div>
+        </div>
+    </div>
+
+    <nav class="fixed w-full top-0 z-50 bg-white border-b border-slate-300 shadow-sm h-16 flex items-center">
+        <div class="w-full max-w-6xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2 text-brand-700">
+                <i class="fa-solid fa-graduation-cap"></i> SAT Reader
+            </h1>
+            <div id="nav-score-container" class="hidden flex items-center gap-3">
+                <div id="combo-badge" class="hidden bg-orange-500 text-white px-2 py-0.5 rounded-md text-xs font-anime transform scale-110">COMBO</div>
+                <div class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold text-sm border border-slate-200">
+                    <span id="nav-current-score">0</span> / <span id="nav-total-score">0</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="https://github.com/JamesWCCheng/Smart-Reader-Pro" target="_blank" class="text-slate-400 hover:text-slate-800 transition-colors text-2xl" title="View on GitHub"><i class="fa-brands fa-github"></i></a>
+                <div class="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded">v1.0 Pro</div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="sticky-mountain-bar" class="hidden fixed top-16 left-0 w-full z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-md transition-all duration-300">
+        <div class="max-w-4xl mx-auto px-4 py-3">
+            <div class="flex justify-between items-end mb-1 px-1">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Summit Progress</span>
+                <span class="text-sm font-bold text-brand-600 font-anime" id="climber-status">Base Camp</span>
+            </div>
+            <div class="relative w-full h-3 rounded-full mountain-track-bg" id="track-bg">
+                <div class="absolute top-0 left-0 h-full w-full flex justify-between items-center px-[2%] text-slate-400/50 text-[8px] font-mono">
+                    <span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>🚩</span>
+                </div>
+                <div id="climber" class="climber-icon" style="left: 0%;">🧗</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="audio-player-bar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-white shadow-2xl border border-slate-300 p-2 pr-6 pl-6 rounded-full flex items-center gap-4">
+        <div class="relative group">
+            <select id="voice-select" class="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold py-2 pl-3 pr-8 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer w-32 truncate" onchange="updateVoice()">
+                <option value="">Loading...</option>
+            </select>
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"><i class="fa-solid fa-chevron-down"></i></div>
+        </div>
+        <div class="h-6 w-px bg-slate-200"></div>
+        <button onclick="toggleReadAloud()" id="btn-read" class="bg-brand-600 hover:bg-brand-700 text-white w-12 h-12 rounded-full font-bold shadow flex items-center justify-center text-xl"><span id="btn-read-icon"><i class="fa-solid fa-volume-high"></i></span></button>
+        <button onclick="stopReadAloud()" id="btn-stop" class="hidden bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-500 w-10 h-10 rounded-full font-bold transition flex items-center justify-center"><i class="fa-solid fa-stop"></i></button>
+        <div class="text-sm font-bold text-slate-600" id="btn-read-text">Read</div>
+    </div>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 pt-24 pb-12">
+        <div id="setup-panel" class="clean-card p-6 md:p-10 bg-white">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">Configure Lesson</h2>
+                <p class="text-slate-500 text-sm mt-1">Real-world topics & AI-powered learning</p>
+            </div>
+            
+            <div class="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                <h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest">Step 1: Roll for Length</h3>
+                <div class="flex items-center gap-8 z-10">
+                    <button onclick="rollDice()" id="dice-btn" class="group relative w-24 h-24 bg-white border-2 border-slate-200 rounded-2xl shadow-xl flex items-center justify-center hover:bg-brand-50 transition-all transform hover:scale-105 active:scale-95">
+                        <i id="dice-icon" class="fa-solid fa-dice-d20 dice-icon-large"></i>
+                    </button>
+                    <div class="text-left">
+                        <div class="text-xs font-bold text-slate-400 uppercase mb-1">Rolls Left: <span id="roll-count" class="text-brand-600 text-lg">2</span></div>
+                        <div id="dice-result" class="text-3xl font-serif font-bold text-slate-300">Tap Dice</div>
+                        <div class="text-xs text-slate-400 mt-1">Short / Med / Long</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-5">
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Gemini API Key</label><input type="password" id="apiKey" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg focus:border-brand-600 focus:ring-0 text-slate-900 outline-none" placeholder="Paste Key Here"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Model</label><select id="modelName" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="gemini-3-flash-preview" selected>Gemini 3 Flash</option><option value="gemini-1.5-flash">Gemini 1.5 Flash</option><option value="gemini-3-pro-preview">Gemini 3 Pro</option></select></div>
+                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Grade</label><select id="gradeLevel" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="Grade 7">Grade 7 (Foundation)</option><option value="Grade 8">Grade 8 (Pre-SAT)</option><option value="Grade 9">Grade 9 (Freshman)</option><option value="Grade 10">Grade 10 (PSAT Prep)</option><option value="Grade 11">Grade 11 (SAT Prime)</option><option value="Grade 12">Grade 12 (Advanced)</option></select></div>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <label class="block text-sm font-bold text-slate-700 mb-3">Topic Source</label>
+                    <div class="flex gap-4 mb-3"><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="sourceType" value="preset" checked onchange="toggleSourceInput()" class="w-4 h-4 accent-brand-600"><span class="text-sm font-bold text-slate-700">Real News</span></label><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="sourceType" value="custom" onchange="toggleSourceInput()" class="w-4 h-4 accent-brand-600"><span class="text-sm font-bold text-slate-700">Custom</span></label></div>
+                    <div id="input-preset"><select id="presetSource" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="CNN Technology">CNN Technology</option><option value="BBC Science">BBC Science</option><option value="ESPN NBA">ESPN NBA</option><option value="NatGeo">National Geographic</option><option value="The Economist">The Economist</option></select></div>
+                    <div id="input-custom" class="hidden"><input type="text" id="customTopic" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600" placeholder="e.g. Artificial Intelligence"></div>
+                </div>
+                <button onclick="startApp()" id="generate-btn" class="w-full bg-slate-300 text-slate-500 font-bold py-4 rounded-xl cursor-not-allowed flex justify-center items-center gap-2" disabled><span id="btn-text">Please Roll Dice First</span><div id="spinner" class="hidden loader border-t-white"></div></button>
+                <div id="error-msg" class="hidden mt-3 p-3 bg-red-100 text-red-700 rounded-lg text-sm"><span id="error-text"></span></div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="flex justify-center mb-8">
+                <div class="bg-white p-1 rounded-xl shadow border border-slate-200 flex gap-1">
+                    <button onclick="switchTab('preview')" id="tab-preview" class="px-6 py-2 rounded-lg text-sm font-bold bg-brand-600 text-white shadow-sm">Preview</button>
+                    <button onclick="switchTab('reading')" id="tab-reading" class="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50">Reading</button>
+                    <button onclick="switchTab('quiz')" id="tab-quiz" class="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50">Quiz</button>
+                </div>
+            </div>
+            <div id="view-preview" class="space-y-6">
+                <div class="clean-card p-6 border-l-4 border-brand-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Key Vocabulary</h3><div id="vocab-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
+                <div class="clean-card p-6 border-l-4 border-fuchsia-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Grammar Focus</h3><div class="space-y-4"><div class="p-4 bg-slate-50 rounded-lg border border-slate-200"><p class="text-xs font-bold text-slate-400 uppercase mb-1">English</p><p id="grammar-en" class="text-slate-800"></p></div><div class="p-4 bg-white rounded-lg border border-slate-200"><p class="text-xs font-bold text-slate-400 uppercase mb-1">Chinese</p><p id="grammar-zh" class="text-slate-600"></p></div></div></div>
+                <div class="text-center pt-2"><button onclick="switchTab('reading')" class="bg-brand-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-brand-700">Start Reading</button></div>
+            </div>
+            <div id="view-reading" class="hidden relative">
+                <div class="clean-card p-6 md:p-12 relative">
+                    <div class="border-b border-slate-200 pb-4 mb-6"><h2 id="article-title" class="text-3xl md:text-5xl font-anime text-brand-700 mb-3 leading-tight"></h2><div id="source-meta-container" class="flex flex-col md:flex-row md:items-center gap-3"></div></div>
+                    <div id="article-body" class="text-lg leading-9 text-slate-700 font-serif pb-20"></div>
+                </div>
+                <div class="text-center mt-8 pb-20"><button onclick="switchTab('quiz')" class="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-emerald-700">Start Quiz</button></div>
+            </div>
+            <div id="view-quiz" class="hidden pb-24 mt-24">
+                <div id="quiz-container" class="space-y-8"></div>
+                <div id="quiz-summary" class="hidden text-center clean-card p-8 mt-12 border-t-8 border-yellow-400">
+                    <div class="mb-4"><div class="text-5xl text-yellow-500 mb-2 drop-shadow-md"><i class="fa-solid fa-crown"></i></div><h3 class="text-2xl font-bold text-slate-800 uppercase tracking-wide">Quiz Complete!</h3></div>
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-6 max-w-sm mx-auto"><div class="text-sm text-slate-400 font-bold uppercase mb-1">Total Score</div><div class="text-5xl font-black text-brand-600 mb-2"><span id="final-score">0</span><span class="text-xl text-slate-400">/100</span></div><div id="final-rank" class="rank-badge text-2xl text-orange-500">Unranked</div></div>
+                    <div class="flex flex-col md:flex-row justify-center gap-4">
+                        <button onclick="shareScore()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition shadow-lg transform active:scale-95"><i class="fa-solid fa-camera"></i> Share Score</button>
+                        <button onclick="generateNewQuiz()" class="bg-brand-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-700"><i class="fa-solid fa-rotate"></i> New Questions <div id="spinner-more" class="hidden loader border-t-white w-4 h-4"></div></button>
+                        <button onclick="resetAndReload()" class="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50"><i class="fa-solid fa-house"></i> New Topic</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Kill Audio on Unload
+        window.addEventListener('beforeunload', () => { window.speechSynthesis.cancel(); });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if(savedKey) document.getElementById('apiKey').value = savedKey;
+        });
+
+        let courseData = {};
+        let userScore = 0;
+        let answeredCount = 0;
+        let comboStreak = 0;
+        let climberStep = 0;
+        let synth = window.speechSynthesis;
+        let readingUtterance = null;
+        let diceRolls = 0;
+        const maxRolls = 2;
+        let selectedLength = "";
+        let isReading = false;
+        let currentWordIndex = 0;
+        let wordSpansCache = [];
+        let voices = [];
+
+        function loadVoices() {
+            voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+            const select = document.getElementById('voice-select');
+            select.innerHTML = '';
+            voices.forEach((v, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                let flag = '🏳️';
+                if(v.lang.includes('US')) flag = '🇺🇸'; else if(v.lang.includes('GB')) flag = '🇬🇧'; else if(v.lang.includes('AU')) flag = '🇦🇺';
+                opt.innerText = `${flag} ${v.name.replace(/Google |Microsoft /g,'').substring(0,12)}`;
+                select.appendChild(opt);
+            });
+        }
+        if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
+
+        const RSS_FEEDS = { 'CNN Technology': 'https://api.rss2json.com/v1/api.json?rss_url=http://rss.cnn.com/rss/edition_technology.rss', 'BBC Science': 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.bbci.co.uk/news/science_and_environment/rss.xml', 'ESPN NBA': 'https://api.rss2json.com/v1/api.json?rss_url=https://www.espn.com/espn/rss/nba/news', 'NatGeo': 'RANDOM_NATGEO' };
+        const NATGEO_TOPICS = ["Deep-sea creatures", "Arctic survival", "Rainforest ecosystems", "Volcanic activity", "Animal migration"];
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
+            } catch (e) { console.warn("Audio fail", e); }
+        }
+        function playCorrectSound() { playTone(523.25, 'sine', 0.1); setTimeout(() => playTone(659.25, 'sine', 0.2), 100); }
+        function playWrongSound() { playTone(80, 'sawtooth', 0.3); setTimeout(() => playTone(60, 'square', 0.3), 50); }
+
+        function getRankTitle(score) {
+            if (score === 100) return "LEGENDARY 🏆";
+            if (score >= 90) return "OUTSTANDING 🌟";
+            if (score >= 80) return "EXCELLENT 🔥";
+            if (score >= 70) return "GREAT JOB 👍";
+            if (score >= 60) return "GOOD START 📚";
+            if (score >= 50) return "KEEP TRYING 💪";
+            return "NEEDS PRACTICE 📝";
+        }
+
+        async function shareScore() {
+            const element = document.getElementById('quiz-summary');
+            try {
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                canvas.toBlob(blob => {
+                    const item = new ClipboardItem({ "image/png": blob });
+                    navigator.clipboard.write([item]).then(() => alert("📸 Score Card Copied!")).catch(err => alert("Copy failed."));
+                });
+            } catch (err) { alert("Snapshot failed"); }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('hidden'); toast.classList.remove('animate-toast-out'); toast.classList.add('animate-toast-in');
+            setTimeout(() => { toast.classList.remove('animate-toast-in'); toast.classList.add('animate-toast-out'); setTimeout(() => toast.classList.add('hidden'), 300); }, 2000);
+        }
+
+        function copyAndSpeak(text, idx) {
+            navigator.clipboard.writeText(text).then(() => showToast(`Copied: "${text}"`)).catch(err => console.error(err));
+            speakOne(text, idx);
+        }
+
+        function rollDice() {
+            if (diceRolls >= maxRolls) return;
+            const btn = document.getElementById('dice-btn');
+            const icon = document.getElementById('dice-icon');
+            
+            // New Animation Class
+            icon.classList.remove('dice-icon-large'); // Reset
+            void icon.offsetWidth; // Trigger reflow
+            icon.classList.add('animate-dice-drop');
+            
+            // Wait for anim
+            setTimeout(() => {
+               icon.classList.remove('animate-dice-drop');
+               icon.classList.add('dice-icon-large');
+            }, 800);
+
+            const r = Math.random();
+            let label = "", colorClass = "";
+            if (r < 0.15) { label = "SHORT"; colorClass = "text-green-600"; selectedLength = "Short"; } else if (r < 0.75) { label = "MEDIUM"; colorClass = "text-blue-600"; selectedLength = "Medium"; } else { label = "LONG"; colorClass = "text-purple-600"; selectedLength = "Long"; }
+            diceRolls++;
+            document.getElementById('roll-count').innerText = maxRolls - diceRolls;
+            document.getElementById('dice-result').innerText = label;
+            document.getElementById('dice-result').className = `text-3xl font-serif font-bold ${colorClass}`;
+            document.getElementById('generate-btn').disabled = false;
+            document.getElementById('generate-btn').classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+            document.getElementById('generate-btn').classList.add('bg-brand-600', 'text-white', 'hover:bg-brand-700', 'shadow-lg');
+            document.getElementById('btn-text').innerText = `Generate ${selectedLength}`;
+            if (diceRolls >= maxRolls) { btn.disabled = true; btn.classList.add('opacity-50'); }
+        }
+
+        function toggleSourceInput() {
+            const isPreset = document.querySelector('input[name="sourceType"]:checked').value === 'preset';
+            document.getElementById('input-preset').classList.toggle('hidden', !isPreset);
+            document.getElementById('input-custom').classList.toggle('hidden', isPreset);
+        }
+
+        function updateClimber(moveUp) {
+            try {
+                const climber = document.getElementById('climber');
+                const status = document.getElementById('climber-status');
+                const track = document.getElementById('track-bg');
+                
+                if(moveUp) {
+                    climberStep = Math.min(10, climberStep + 1);
+                    climber.classList.add('animate-hiker-bounce');
+                    setTimeout(() => climber.classList.remove('animate-hiker-bounce'), 600);
+                } else {
+                    climberStep = Math.max(0, climberStep - 1);
+                    if(track) { track.classList.add('animate-flash-red'); setTimeout(() => track.classList.remove('animate-flash-red'), 500); }
+                }
+                const pct = (climberStep / 10) * 90;
+                climber.style.left = `${pct}%`;
+                if(climberStep === 0) status.innerText = "Base Camp";
+                else if(climberStep === 5) status.innerText = "Halfway!";
+                else if(climberStep === 10) {
+                    status.innerText = "SUMMIT REACHED! 🏆";
+                    climber.innerText = "🏆";
+                    if(track) track.classList.add('animate-flash-gold');
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.2 } });
+                } else {
+                    status.innerText = `Altitude: ${climberStep}00m`;
+                    climber.innerText = "🧗";
+                    if(track) track.classList.remove('animate-flash-gold');
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function switchTab(t) {
+            stopReadAloud(); closePopup();
+            const navScore = document.getElementById('nav-score-container');
+            const audioBar = document.getElementById('audio-player-bar');
+            const mountainBar = document.getElementById('sticky-mountain-bar');
+            if(t === 'quiz') { navScore.classList.remove('hidden'); mountainBar.classList.remove('hidden'); } 
+            else { navScore.classList.add('hidden'); mountainBar.classList.add('hidden'); }
+            if(t === 'reading') { audioBar.classList.remove('hidden'); } else { audioBar.classList.add('hidden'); }
+            ['preview','reading','quiz'].forEach(x => {
+                document.getElementById(`view-${x}`).classList.add('hidden');
+                document.getElementById(`tab-${x}`).className = "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50";
+            });
+            document.getElementById(`view-${t}`).classList.remove('hidden');
+            document.getElementById(`tab-${t}`).className = "px-6 py-2 rounded-lg text-sm font-bold bg-brand-600 text-white shadow-sm";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetAndReload() {
+            window.speechSynthesis.cancel();
+            location.reload();
+        }
+
+        async function startApp() {
+            const key = document.getElementById('apiKey').value.trim();
+            if(key) localStorage.setItem('gemini_api_key', key);
+            const model = document.getElementById('modelName').value;
+            const grade = document.getElementById('gradeLevel').value;
+            const isPreset = document.querySelector('input[name="sourceType"]:checked').value === 'preset';
+            let topic = isPreset ? document.getElementById('presetSource').value : document.getElementById('customTopic').value.trim();
+            const errorEl = document.getElementById('error-msg');
+            
+            errorEl.classList.add('hidden');
+            if(!key || !topic) { document.getElementById('error-text').innerText = "Please enter API Key and Topic."; errorEl.classList.remove('hidden'); return; }
+
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btn-text').innerText = "Finding News..."; 
+            document.getElementById('spinner').classList.remove('hidden');
+
+            let newsContext = "", finalTopic = topic, sourceLink = "";
+            if (isPreset) {
+                if (RSS_FEEDS[topic] && RSS_FEEDS[topic] !== 'RANDOM_NATGEO') {
+                    try {
+                        const res = await fetch(RSS_FEEDS[topic]); const rss = await res.json();
+                        if (rss.items && rss.items.length > 0) {
+                            const item = rss.items[Math.floor(Math.random() * Math.min(10, rss.items.length))];
+                            finalTopic = item.title; sourceLink = item.link; newsContext = `Based on real news: "${item.title}". Summary: ${item.description||''}`;
+                        }
+                    } catch(e) { console.warn("RSS failed"); }
+                } else if (topic === 'NatGeo') {
+                    finalTopic = NATGEO_TOPICS[Math.floor(Math.random() * NATGEO_TOPICS.length)]; newsContext = "Nature documentary style.";
+                }
+            } else { newsContext = "User custom topic."; }
+
+            document.getElementById('btn-text').innerText = "Writing...";
+            let lengthInstruction = selectedLength === "Short" ? "approx 250 words" : selectedLength === "Long" ? "approx 800 words" : "approx 450-500 words";
+            const prompt = `Role: SAT Tutor. Level: ${grade}. TOPIC: ${finalTopic}. CONTEXT: ${newsContext}. Constraint: Write an article that is **${lengthInstruction}**. 
+            Rules: 
+            1. Article/Quiz in English. 
+            2. ALL Explanations/Definitions MUST be in **Traditional Chinese (Taiwan / 繁體中文)** ONLY. Do NOT use Simplified Chinese.
+            Output JSON: { "title":"", "article":"", "sourceMeta":"(Based on...)", "vocabulary":[{"word":"", "pos":"(e.g. n., v.)", "def":"", "trans":"", "ex":""}], "grammar":{"en":"","zh":""}, "quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}] }. Req: 6 vocab, 10 questions.`;
+
+            try {
+                const data = await callGemini(key, model, prompt);
+                userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
+                document.getElementById('nav-current-score').innerText = 0;
+                document.getElementById('quiz-summary').classList.add('hidden');
+                courseData = data; courseData.sourceUrl = sourceLink; initUI();
+            } catch(e) { 
+                document.getElementById('error-text').innerText = `Error: ${e.message}`; errorEl.classList.remove('hidden'); 
+                btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } 
+            finally { document.getElementById('btn-text').innerText = `Generate ${selectedLength}`; document.getElementById('spinner').classList.add('hidden'); }
+        }
+
+        document.addEventListener('mouseup', function(e) {
+            if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+            const popup = document.getElementById('selection-popup');
+            if(popup.contains(e.target)) return;
+            const selection = window.getSelection();
+            const txt = selection.toString().trim();
+            if(txt.length > 0 && !document.getElementById('view-reading').classList.contains('hidden')) {
+                currentSelectionText = txt;
+                popup.classList.remove('hidden');
+                document.getElementById('popup-trigger').classList.remove('hidden');
+                document.getElementById('popup-content').classList.add('hidden');
+                const rect = selection.getRangeAt(0).getBoundingClientRect();
+                popup.style.left = `${rect.left}px`; popup.style.top = `${rect.bottom + 10}px`;
+            } else { closePopup(); }
+        });
+
+        async function translateSelection() {
+            const key = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('modelName').value;
+            document.getElementById('popup-trigger').classList.add('hidden');
+            document.getElementById('popup-content').classList.remove('hidden');
+            document.getElementById('popup-loader').classList.remove('hidden');
+            document.getElementById('popup-result').innerText = "";
+            try {
+                const res = await callGemini(key, model, `Translate to Traditional Chinese (Taiwan). Concise.\n\n"${currentSelectionText}"`, false);
+                document.getElementById('popup-result').innerText = res;
+            } catch(e) { document.getElementById('popup-result').innerText = "Error: " + e.message; }
+            finally { document.getElementById('popup-loader').classList.add('hidden'); }
+        }
+        function closePopup() { document.getElementById('selection-popup').classList.add('hidden'); window.getSelection().removeAllRanges(); }
+
+        async function callGemini(key, model, prompt, expectJSON = true, retryCount = 0) {
+            try {
+                if (retryCount > 0) document.getElementById('btn-text').innerText = `Connection unstable... Retrying (${retryCount}/3)`;
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const json = await res.json();
+                if(json.error) throw new Error(json.error.message);
+                let text = json.candidates[0].content.parts[0].text;
+                if (expectJSON) { 
+                    const jsonMatch = text.match(/\{[\s\S]*\}/); 
+                    if (!jsonMatch) throw new Error("Invalid JSON from AI");
+                    return JSON.parse(jsonMatch[0]); 
+                } 
+                else return text;
+            } catch (e) { 
+                console.warn(`Attempt ${retryCount+1} failed: ${e.message}`);
+                if (retryCount < 3) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    return callGemini(key, model, prompt, expectJSON, retryCount + 1);
+                }
+                throw e;
+            }
+        }
+
+        async function generateNewQuiz() {
+            const key = document.getElementById('apiKey').value;
+            const model = document.getElementById('modelName').value;
+            document.getElementById('spinner-more').classList.remove('hidden');
+            try {
+                const data = await callGemini(key, model, `STRICT JSON ONLY. Context: "${courseData.title}". Task: 10 NEW SAT questions. Rules: Explanations in **Traditional Chinese (Taiwan)** ONLY. JSON: {"quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}]}`);
+                courseData.quiz = data.quiz; 
+                userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
+                document.getElementById('nav-current-score').innerText = 0;
+                document.getElementById('quiz-summary').classList.add('hidden');
+                document.getElementById('combo-badge').classList.add('hidden');
+                renderQuiz(); window.scrollTo(0,0);
+            } catch(e) { alert("Error: "+e.message); } 
+            finally { document.getElementById('spinner-more').classList.add('hidden'); }
+        }
+
+        function initUI() {
+            document.getElementById('setup-panel').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('vocab-list').innerHTML = courseData.vocabulary.map(v => `<div class="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:shadow-md transition"><div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2 flex-wrap"><span class="font-bold text-lg text-brand-700 cursor-copy border-b-2 border-transparent hover:border-brand-200 transition" onclick="copyAndSpeak('${v.word}')" title="Click to Copy & Read">${v.word}</span><span class="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full italic font-serif">${v.pos || 'n.'}</span><a href="https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(v.word)}" target="_blank" class="text-xs text-slate-400 hover:text-brand-600 transition" title="Look up"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><button onclick="copyAndSpeak('${v.word}')" class="text-slate-400 hover:text-brand-500"><i class="fa-solid fa-volume-high"></i></button></div><div class="text-slate-800 font-bold mb-1">${v.trans}</div><div class="text-sm text-slate-500 italic">${v.def}</div></div>`).join('');
+            document.getElementById('grammar-en').innerText = courseData.grammar.en || courseData.grammar;
+            document.getElementById('grammar-zh').innerText = courseData.grammar.zh || "";
+            document.getElementById('article-title').innerText = courseData.title;
+            let metaHtml = ''; if(courseData.sourceUrl) { metaHtml += `<a href="${courseData.sourceUrl}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 hover:bg-brand-200 text-brand-700 rounded-lg text-sm font-bold uppercase transition"><i class="fa-solid fa-newspaper"></i> Read Original</a>`; }
+            if(courseData.sourceMeta) { metaHtml += `<span class="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-sm font-medium italic">${courseData.sourceMeta}</span>`; }
+            document.getElementById('source-meta-container').innerHTML = metaHtml;
+            let processed = courseData.article.split(/\n\n+/).map(para => para.split(/(\s+)/).map(w => w.trim() ? `<span class="word-span temp-idx">${w}</span>` : w).join(''));
+            const imgTag = `<img src="https://image.pollinations.ai/prompt/${encodeURIComponent(courseData.title + ' anime style digital art scene detail')}?width=768&height=432&nologo=true" class="article-image" alt="AI Illustration" onerror="this.style.display='none'">`;
+            if (processed.length > 1) processed.splice(1, 0, imgTag);
+            document.getElementById('article-body').innerHTML = processed.map(c => c.startsWith('<img') ? c : `<p class="mb-4">${c}</p>`).join('');
+            let gIdx = 0;
+            document.querySelectorAll('.word-span.temp-idx').forEach(span => {
+                const idx = gIdx++; const t = span.innerText.replace(/[^\w']/g,"");
+                span.onclick = () => copyAndSpeak(t, idx); span.id = `word-${idx}`; span.classList.remove('temp-idx');
+            });
+            wordSpansCache = Array.from(document.querySelectorAll('.word-span'));
+            renderQuiz(); switchTab('preview');
+        }
+
+        function renderQuiz() {
+            document.getElementById('nav-total-score').innerText = courseData.quiz.length * 10;
+            document.getElementById('quiz-container').innerHTML = courseData.quiz.map((q, i) => `<div class="clean-card p-6" id="q-card-${i}"><div class="flex gap-4 mb-4"><span class="bg-slate-100 text-slate-600 px-3 py-1 rounded font-bold text-sm h-fit">Q${i+1}</span><div class="font-bold text-lg text-slate-800">${q.q}</div></div><div class="space-y-2 pl-0 md:pl-12">${q.opt.map((o,idx)=>`<button onclick="check(${i},${idx},this)" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition opt-btn-${i}" data-idx="${idx}"><span class="font-bold mr-2 text-slate-400">${String.fromCharCode(65+idx)}.</span>${o}</button>`).join('')}</div><div id="fb-${i}" class="hidden mt-6 ml-0 md:ml-12 p-4 bg-slate-50 rounded-lg border border-slate-200"><div class="font-bold mb-2 st"></div><div class="text-sm text-slate-700">${q.expEn}</div><div class="text-sm text-slate-500 mt-2 border-t border-slate-200 pt-2">${q.expZh}</div></div></div>`).join('');
+        }
+
+        function check(qIdx, sIdx, btn) {
+            // 1. UI Updates (Always Run)
+            const q = courseData.quiz[qIdx];
+            const fb = document.getElementById(`fb-${qIdx}`);
+            const card = document.getElementById(`q-card-${qIdx}`);
+            
+            // Disable buttons
+            document.querySelectorAll(`.opt-btn-${qIdx}`).forEach(b => { b.disabled = true; b.classList.add('opacity-60'); });
+            btn.classList.remove('opacity-60');
+
+            // 2. State & Score
+            if(sIdx === q.ans) {
+                btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                fb.querySelector('.st').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-check"></i> Correct!</span>';
+                userScore += 10; comboStreak++; 
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                document.querySelector(`.opt-btn-${qIdx}[data-idx="${q.ans}"]`).classList.add('bg-emerald-100', 'border-emerald-500');
+                fb.querySelector('.st').innerHTML = '<span class="text-red-500"><i class="fa-solid fa-xmark"></i> Incorrect</span>';
+                comboStreak = 0; 
+            }
+            
+            fb.classList.remove('hidden'); 
+            document.getElementById('nav-current-score').innerText = userScore;
+            if(comboStreak > 1) { 
+                const b = document.getElementById('combo-badge'); b.innerText = `COMBO x${comboStreak}`; 
+                b.classList.remove('hidden'); b.classList.add('animate-combo-pop'); 
+                setTimeout(()=>b.classList.remove('animate-combo-pop'), 300); 
+            } else {
+                document.getElementById('combo-badge').classList.add('hidden');
+            }
+
+            // 3. Audio & Animation (Safe Try-Catch)
+            try {
+                if(sIdx === q.ans) {
+                    playCorrectSound(); confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+                    updateClimber(true);
+                } else {
+                    playWrongSound(); updateClimber(false);
+                    card.classList.add('animate-flash-red', 'animate-card-shake'); 
+                    setTimeout(()=>card.classList.remove('animate-flash-red', 'animate-card-shake'), 500);
+                }
+            } catch(e) { console.warn("Audio/Anim error suppressed:", e); }
+
+            // 4. Final Completion Check (Guaranteed)
+            if(++answeredCount >= courseData.quiz.length) { 
+                document.getElementById('quiz-summary').classList.remove('hidden'); 
+                document.getElementById('final-score').innerText = userScore;
+                document.getElementById('final-rank').innerText = getRankTitle(userScore);
+                setTimeout(()=>document.getElementById('quiz-summary').scrollIntoView({behavior:'smooth'}), 600);
+            } else {
+                setTimeout(() => { const next = document.getElementById(`q-card-${qIdx+1}`); if(next) next.scrollIntoView({behavior:'smooth', block:'center'}); }, 800);
+            }
+        }
+
+        function getVoice() { 
+            const idx = document.getElementById('voice-select').value;
+            return voices[idx] || synth.getVoices()[0]; 
+        }
+        function updateVoice() { stopReadAloud(); }
+
+        function speakOne(t, idx) { 
+            synth.cancel(); isReading = false; 
+            if(idx!==undefined) currentWordIndex = idx;
+            const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.voice=getVoice(); 
+            updateAudioUI("Resume"); 
+            document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current')); 
+            if(wordSpansCache[idx]) wordSpansCache[idx].classList.add('highlight-current'); 
+            synth.speak(u); 
+        }
+
+        function toggleReadAloud() {
+            if(isReading) { 
+                synth.cancel(); isReading=false; updateAudioUI("Resume"); 
+            } else {
+                if(!wordSpansCache.length) return;
+                
+                const txt = wordSpansCache.slice(currentWordIndex).map(s=>s.innerText).join(" ");
+                readingUtterance = new SpeechSynthesisUtterance(txt); 
+                readingUtterance.voice=getVoice(); 
+                readingUtterance.rate=0.9;
+                
+                const startIndex = currentWordIndex; 
+                let localIndex = 0;
+
+                readingUtterance.onboundary = (e) => {
+                    if(e.name === 'word') {
+                        const targetIndex = startIndex + localIndex;
+                        if(targetIndex < wordSpansCache.length) {
+                            // Update Global State
+                            currentWordIndex = targetIndex;
+                            
+                            // Highlight
+                            document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current'));
+                            const target = wordSpansCache[targetIndex];
+                            if(target) {
+                                target.classList.add('highlight-current');
+                                target.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+                            }
+                        }
+                        localIndex++;
+                    }
+                };
+                
+                readingUtterance.onend = () => { isReading=false; updateAudioUI("Read"); document.getElementById('btn-stop').classList.add('hidden'); };
+                isReading=true; updateAudioUI("Pause"); document.getElementById('btn-stop').classList.remove('hidden'); synth.speak(readingUtterance);
+            }
+        }
+
+        function stopReadAloud() { synth.cancel(); isReading=false; currentWordIndex=0; updateAudioUI("Read"); document.getElementById('btn-stop').classList.add('hidden'); document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current')); }
+        function updateAudioUI(s) { document.getElementById('btn-read-text').innerText = s; document.getElementById('btn-read-icon').innerHTML = s==="Pause" ? '<i class="fa-solid fa-pause"></i>' : s==="Resume" ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-volume-high"></i>'; }
+        
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+    </script>
+</body>
+</html>
