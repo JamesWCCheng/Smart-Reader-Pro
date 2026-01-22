@@ -1,14 +1,27 @@
-# 🎓 SAT Smart Reader Pro (AI-Powered)
+# 🎓 SAT Smart Reader Pro v2.0 (AI-Powered)
 
 **SAT Smart Reader Pro** 是一個全端式英語學習 Web App，旨在成為您最強大的 **AI 虛擬家教**。
 
-它結合了 **Google Gemini** 的強大生成能力與現代化的 Web 技術，能根據您感興趣的即時新聞（如 NBA、科技、自然科學）或自訂主題，自動生成符合 SAT 考試難度的閱讀理解課程。從單字解析、文法分析到模擬試題，所有內容皆即時生成，讓學習不再枯燥，充滿挑戰與樂趣。
+v2.0 版本帶來了革命性的 **「挑戰模式 (Challenge Mode)」**。現在，您不僅可以獨自練習，還能將 AI 生成的專屬課程生成一組 **「挑戰代碼」** 分享給朋友。朋友輸入代碼後，將會面對一模一樣的文章與題目，讓你們可以公平競爭，比拚誰的閱讀理解與單字量更強！
 
-本專案採用 **單一 HTML 架構 (Single File Application)**，無需安裝任何環境或伺服器，下載後直接用瀏覽器打開即可開始學習！
+本專案採用 **單一 HTML 架構 (Single File Application)**，內建 LZ-String 壓縮引擎，無需安裝任何環境、無需後端資料庫，下載後直接用瀏覽器打開即可開始學習！
 
-![UI Preview](https://via.placeholder.com/800x400.png?text=SAT+Smart+Reader+Pro+UI+Preview)
+![UI Preview](https://via.placeholder.com/800x400.png?text=SAT+Smart+Reader+Pro+v2.0+UI+Preview)
 
-## ✨ 核心特色 (Core Features)
+## ✨ v2.0 重大更新 (New in v2.0)
+
+### ⚔️ 挑戰者系統 (Challenger System)
+* **無需後端的試卷分享**：考完試覺得題目很有趣？點擊 **"Challenge Friend"**，系統會將整份試卷（文章、單字、考題）壓縮成一串 **「挑戰代碼」**。
+* **公平競技**：朋友只需在首頁貼上這組代碼，就能載入 **完全相同** 的課程內容，直接進入對戰狀態。
+* **戰績快照**：考完後使用 **Snapshot Score** 功能，一鍵生成精美的成績單圖片，方便在社群軟體上炫耀戰果。
+
+### 🛡️ 核心架構重構 (Architecture Overhaul)
+* **DOM 渲染引擎 (Safe-DOM)**：全面棄用傳統的 HTML 字串拼接，改用原生 DOM 元素建構。這徹底解決了單字中包含特殊符號（如 `Newton's`）導致程式崩潰的問題。
+* **內嵌壓縮技術**：直接內建 LZ-String 演算法，不依賴外部 CDN，確保在任何網路環境下都能順利生成與讀取分享代碼。
+
+---
+
+## 🚀 核心特色 (Core Features)
 
 ### 🤖 智慧課程生成
 * **即時新聞導入**：內建 RSS 串接功能，可即時抓取 CNN、BBC、ESPN、National Geographic 或 The Economist 的最新頭條作為學習素材。
@@ -20,7 +33,6 @@
 * **🎲 3D 物理骰子**：充滿儀式感的開場動畫，擲出骰子決定文章篇幅 (Short/Medium/Long)。
 * **🔥 連擊系統 (Combo)**：連續答對題目可累積 Combo 加成，配合火焰特效與音效，激發學習成就感。
 * **🎵 動態音效回饋**：內建 Web Audio API 合成音效，答對時悅耳、答錯時警示，並伴隨畫面震動與彩帶特效。
-* **🏆 成績分級與分享**：根據得分獲得不同稱號 (如 LEGENDARY)，並支援 **一鍵截圖分享** 功能，讓您輕鬆將成績單複製給朋友。
 
 ### 📚 專業學習工具箱
 * **📖 權威字典整合**：單字卡內建 **Cambridge Dictionary** 直連按鈕，一鍵查詢權威例句與發音。
@@ -28,22 +40,20 @@
 * **📋 點擊即查 (Click-to-Copy)**：閱讀時點擊任意單字，系統會自動朗讀並將單字複製到剪貼簿，方便筆記。
 * **🗣️ 多國口音朗讀**：內建懸浮播放器，支援切換 **🇺🇸 美式 / 🇬🇧 英式 / 🇦🇺 澳式** 口音，訓練不同腔調的聽力。
 
-### 🛡️ 極致的使用者體驗
-* **智慧記憶 (Smart Memory)**：自動儲存您的 API Key 於本地端，無需重複輸入。
-* **防崩潰架構 (Crash-Proof)**：採用邏輯分離設計，確保音效或網路波動不會影響課程結算，保證 100% 順暢體驗。
-* **防呆介面設計**：經過優化的介面結構 (Input Safe Mode)，確保在各種裝置上都能流暢操作。
-
 ---
 
 ## 🚀 快速開始 (Getting Started)
 
-1.  **下載專案**：點擊右上角的 `Code` -> `Download ZIP`，解壓縮後找到 `index.html`。
-2.  **開啟網頁**：直接雙擊 `index.html`，使用 **Chrome**、**Edge** 或 **Safari** 瀏覽器開啟。
-3.  **輸入金鑰**：在設定面板貼上您的 **Google Gemini API Key** (首次使用需輸入，系統會自動記憶)。
-4.  **開始學習**：
-    * 選擇新聞來源或輸入感興趣的主題。
-    * **點擊骰子** 決定文章長度。
-    * 按下 **Generate**，享受您的專屬課程！
+### 方式一：建立新課程
+1.  **下載專案**：下載 `index.html`。
+2.  **開啟網頁**：直接雙擊用瀏覽器開啟。
+3.  **輸入金鑰**：在設定面板貼上您的 **Google Gemini API Key**。
+4.  **開始生成**：選擇主題、擲骰子、按下 Generate。
+
+### 方式二：接受朋友挑戰
+1.  複製朋友傳來的 **挑戰代碼** (例如 `eyJ0aXRsZ...`)。
+2.  在首頁的 **"Have a Challenge Code?"** 欄位貼上代碼。
+3.  點擊 **Load**，直接開始考試！
 
 ---
 
@@ -64,19 +74,20 @@
 
 * **Frontend**: Pure HTML5, JavaScript (ES6+).
 * **Styling**: Tailwind CSS (CDN) - RWD & Modern Design.
-* **AI Engine**: Google Gemini API (3.0 Flash / Pro).
+* **AI Engine**: Google Gemini API (1.5 Flash / Pro, 3.0 Preview).
+* **Core Libraries (Embedded)**:
+    * `LZ-String`: High-performance string compression for sharing codes.
 * **External Libraries**:
     * `FontAwesome`: UI Icons.
     * `Canvas Confetti`: Visual effects.
     * `HTML2Canvas`: Snapshot generation.
-    * `RSS2JSON`: Real-time news feed processing.
 
 ---
 
 ## 🔗 關於專案 (About)
 
 * **Project:** SAT Smart Reader Pro
-* **Version:** 1.0.0 (Initial Release)
+* **Version:** 2.0.0 (Challenge Edition)
 * **Author:** James Cheng
 * **GitHub Repository:** [https://github.com/JamesWCCheng/Smart-Reader-Pro](https://github.com/JamesWCCheng/Smart-Reader-Pro)
 
