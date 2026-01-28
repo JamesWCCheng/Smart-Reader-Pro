@@ -1,39 +1,37 @@
-# 🎓 SAT Smart Reader Pro v2.3 (AI-Powered)
+# 🎓 SAT Smart Reader Pro v2.4 (AI-Powered)
 
 **SAT Smart Reader Pro** 是一個全端式英語學習 Web App，旨在成為您最強大的 **AI 虛擬家教**。
 
-v2.3 版本帶來了完整的 **「學習快照生態系 (Snapshot Ecosystem)」** 與 **「AI 智能總結」**。現在，您不僅能挑戰 AI 生成的課程，還能將文章內容、單字表以及詳細的成績分析，一鍵轉化為精美圖片分享給朋友。搭配全新的檔案分享機制，徹底打破瀏覽器網址長度的限制。
+v2.4 版本帶來了極致的 **「使用者體驗 (UX Polish)」** 與 **「全方位分享生態系」**。我們解決了瀏覽器語音朗讀的長久痛點，並引入了檔案傳輸模式，徹底打破通訊軟體對網址長度的限制。現在，您可以無縫地將這份結合 AI 生成文章、單字卡與測驗的「智慧考卷」，完整地傳送給任何一位朋友。
 
 本專案採用 **單一 HTML 架構 (Single File Application)**，內建 LZ-String 壓縮引擎與 GZIP 支援，無需安裝任何環境、無需後端資料庫，下載後直接用瀏覽器打開即可開始學習！
 
-![UI Preview](https://via.placeholder.com/800x400.png?text=SAT+Smart+Reader+Pro+v2.3+UI+Preview)
+![UI Preview](https://via.placeholder.com/800x400.png?text=SAT+Smart+Reader+Pro+v2.4+UI+Preview)
 
-## ✨ v2.3 重大更新 (New in v2.3)
+## ✨ v2.4 重大更新 (New in v2.4)
 
-### 📸 學習快照生態系 (Snapshot Ecosystem)
-不再只有分數能分享！我們將「截圖分享」功能擴展到了學習的每一個環節：
-* **📄 Share Article (文章快照)**：(v2.1 新增) 遇到一篇寫得超棒的 AI 文章？一鍵將整篇文章生成圖片，輕鬆分享給戰友閱讀。
-* **🔤 Share Vocab (單字卡快照)**：(v2.3 新增) 系統自動將本課的關鍵單字、詞性與解釋排版成一張精美的「單字記憶卡」，方便在手機上隨時複習。
-* **🏆 Snapshot Score (戰績快照)**：經典的成績單截圖，包含您的分數、等級與 Combo 紀錄。
+### 🚀 極致流暢體驗 (UX Polish)
+* **🗣️ 智能語音分段 (Audio Chunking Fix)**：徹底修復了瀏覽器在朗讀長文章時，Highlight 游標會消失的 Bug。現在系統會自動將長文切片朗讀，確保跟讀體驗 100% 順暢不中斷。
+* **⚓ 智慧捲動鎖定 (Smart Scroll Anchor)**：進行截圖分享時，畫面不再會異常跳動。系統會自動記憶並還原您的閱讀位置，保持體驗連貫。
+* **🚫 無干擾通知 (Toast System)**：全面移除舊式的彈跳視窗 (Alert)，改用優雅的底部黑色 Toast 通知，操作更現代化。
 
-### 🧠 AI 智能總結與難度分析 (Smart Analysis)
-* **📊 文章難度分級**：(v2.1 新增) AI 會根據用字遣詞自動評估文章難度（如 CEFR B2, Lexile 1000L）。
-    * *(v2.2 優化)* **點擊即複製**：點擊難度標籤即可複製文字，方便記錄學習歷程。
-* **✨ 重點摘要 (Key Takeaways)**：(v2.1 新增) 考完試不用自己總結，AI 自動歸納文章的 **3 大核心重點**，幫助您快速回顧。
-* **📝 文章標題回溯**：在結算畫面清楚顯示文章標題，讓您知道剛剛讀了什麼。
+### 📨 全方位分享生態系 (Sharing Ecosystem)
+* **📂 檔案傳輸模式 (File Share)**：(v2.4 新增) 專為 Line/WhatsApp 設計。一鍵下載 `.json` 考卷檔，朋友只需匯入檔案即可開始挑戰，完全避開網址長度限制。
+* **📧 Email 快捷分享**：(v2.4 新增) 自動喚起郵件軟體並附上教學，讓您輕鬆將考卷寄給戰友。
+* **📸 學習快照 (Snapshot)**：
+    * **Share Article**：將 AI 生成的精彩文章轉為圖片。
+    * **Share Vocab**：將單字表轉為精美的單字記憶卡。
+    * **Snapshot Score**：生成詳細的成績分析圖。
 
 ---
 
 ## 🚀 核心特色 (Core Features)
 
-### ⚔️ 挑戰者系統 (Challenger System)
-* **📂 檔案/代碼分享 (Reliable Sharing)**：為了解決通訊軟體截斷網址的問題，我們採用 **GZIP 壓縮檔案** 或 **Base64 代碼** 的方式。考完試點擊 **"Export Challenge"**，將檔案或代碼傳給朋友，他們就能載入 **完全相同** 的考卷。
-* **⚖️ 公平競技**：朋友載入後將跳過設定階段，直接面對與您一樣的文章與題目。
-
 ### 🤖 智慧課程生成
 * **即時新聞導入**：內建 RSS 串接功能，可即時抓取 CNN、BBC、ESPN、National Geographic 或 The Economist 的最新頭條作為學習素材。
 * **自訂主題模式**：想讀什麼就讀什麼！輸入任何關鍵字（如 Black Myth: Wukong），AI 立即為您撰寫專屬文章。
 * **雙語深度解析**：文章與題目為全英文，但所有單字定義、文法解析與詳解皆提供 **繁體中文 (台灣)** 對照，消除理解障礙。
+* **🧠 AI 智能總結**：考完試後，AI 會自動評估文章難度 (Lexile/CEFR) 並歸納 3 大核心重點 (Takeaways)。
 
 ### 🎮 遊戲化互動學習 (Gamification)
 * **🏔️ 登山者進度條 (Mountain Tracker)**：獨創的置頂進度條，答對前進、答錯後退，視覺化您的攻頂之路！
@@ -43,7 +41,7 @@ v2.3 版本帶來了完整的 **「學習快照生態系 (Snapshot Ecosystem)」
 
 ### 📚 專業學習工具箱
 * **📖 權威字典整合**：單字卡內建 **Cambridge Dictionary** 直連按鈕，一鍵查詢權威例句與發音。
-* **🗣️ 智能分段朗讀 (Smart Chunking)**：(v2.2 技術優化) 改寫語音引擎，採用 **每 15 字分段朗讀** 技術，徹底解決長文章導致瀏覽器 Highlight 游標消失的 Bug，確保跟讀體驗 100% 順暢。
+* **🗣️ 多國口音朗讀**：內建懸浮播放器，支援切換 **🇺🇸 美式 / 🇬🇧 英式 / 🇦🇺 澳式** 口音，訓練不同腔調的聽力。
 * **📋 點擊即查 (Click-to-Copy)**：閱讀時點擊任意單字，系統會自動朗讀並將單字複製到剪貼簿。
 
 ---
@@ -95,7 +93,7 @@ v2.3 版本帶來了完整的 **「學習快照生態系 (Snapshot Ecosystem)」
 ## 🔗 關於專案 (About)
 
 * **Project:** SAT Smart Reader Pro
-* **Version:** 2.3.0 (Snapshot Ecosystem)
+* **Version:** 2.4.0 (UX & Share Edition)
 * **Author:** James Cheng
 * **GitHub Repository:** [https://github.com/JamesWCCheng/Smart-Reader-Pro](https://github.com/JamesWCCheng/Smart-Reader-Pro)
 
