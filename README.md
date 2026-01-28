@@ -1,14 +1,34 @@
-# 🎓 SAT Smart Reader Pro (AI-Powered)
+# 🎓 SAT Smart Reader Pro v2.3 (AI-Powered)
 
 **SAT Smart Reader Pro** 是一個全端式英語學習 Web App，旨在成為您最強大的 **AI 虛擬家教**。
 
-它結合了 **Google Gemini** 的強大生成能力與現代化的 Web 技術，能根據您感興趣的即時新聞（如 NBA、科技、自然科學）或自訂主題，自動生成符合 SAT 考試難度的閱讀理解課程。從單字解析、文法分析到模擬試題，所有內容皆即時生成，讓學習不再枯燥，充滿挑戰與樂趣。
+v2.3 版本帶來了完整的 **「學習快照生態系 (Snapshot Ecosystem)」** 與 **「AI 智能總結」**。現在，您不僅能挑戰 AI 生成的課程，還能將文章內容、單字表以及詳細的成績分析，一鍵轉化為精美圖片分享給朋友。搭配全新的檔案分享機制，徹底打破瀏覽器網址長度的限制。
 
-本專案採用 **單一 HTML 架構 (Single File Application)**，無需安裝任何環境或伺服器，下載後直接用瀏覽器打開即可開始學習！
+本專案採用 **單一 HTML 架構 (Single File Application)**，內建 LZ-String 壓縮引擎與 GZIP 支援，無需安裝任何環境、無需後端資料庫，下載後直接用瀏覽器打開即可開始學習！
 
-![UI Preview](https://via.placeholder.com/800x400.png?text=SAT+Smart+Reader+Pro+UI+Preview)
+![UI Preview](https://via.placeholder.com/800x400.png?text=SAT+Smart+Reader+Pro+v2.3+UI+Preview)
 
-## ✨ 核心特色 (Core Features)
+## ✨ v2.3 重大更新 (New in v2.3)
+
+### 📸 學習快照生態系 (Snapshot Ecosystem)
+不再只有分數能分享！我們將「截圖分享」功能擴展到了學習的每一個環節：
+* **📄 Share Article (文章快照)**：(v2.1 新增) 遇到一篇寫得超棒的 AI 文章？一鍵將整篇文章生成圖片，輕鬆分享給戰友閱讀。
+* **🔤 Share Vocab (單字卡快照)**：(v2.3 新增) 系統自動將本課的關鍵單字、詞性與解釋排版成一張精美的「單字記憶卡」，方便在手機上隨時複習。
+* **🏆 Snapshot Score (戰績快照)**：經典的成績單截圖，包含您的分數、等級與 Combo 紀錄。
+
+### 🧠 AI 智能總結與難度分析 (Smart Analysis)
+* **📊 文章難度分級**：(v2.1 新增) AI 會根據用字遣詞自動評估文章難度（如 CEFR B2, Lexile 1000L）。
+    * *(v2.2 優化)* **點擊即複製**：點擊難度標籤即可複製文字，方便記錄學習歷程。
+* **✨ 重點摘要 (Key Takeaways)**：(v2.1 新增) 考完試不用自己總結，AI 自動歸納文章的 **3 大核心重點**，幫助您快速回顧。
+* **📝 文章標題回溯**：在結算畫面清楚顯示文章標題，讓您知道剛剛讀了什麼。
+
+---
+
+## 🚀 核心特色 (Core Features)
+
+### ⚔️ 挑戰者系統 (Challenger System)
+* **📂 檔案/代碼分享 (Reliable Sharing)**：為了解決通訊軟體截斷網址的問題，我們採用 **GZIP 壓縮檔案** 或 **Base64 代碼** 的方式。考完試點擊 **"Export Challenge"**，將檔案或代碼傳給朋友，他們就能載入 **完全相同** 的考卷。
+* **⚖️ 公平競技**：朋友載入後將跳過設定階段，直接面對與您一樣的文章與題目。
 
 ### 🤖 智慧課程生成
 * **即時新聞導入**：內建 RSS 串接功能，可即時抓取 CNN、BBC、ESPN、National Geographic 或 The Economist 的最新頭條作為學習素材。
@@ -20,30 +40,26 @@
 * **🎲 3D 物理骰子**：充滿儀式感的開場動畫，擲出骰子決定文章篇幅 (Short/Medium/Long)。
 * **🔥 連擊系統 (Combo)**：連續答對題目可累積 Combo 加成，配合火焰特效與音效，激發學習成就感。
 * **🎵 動態音效回饋**：內建 Web Audio API 合成音效，答對時悅耳、答錯時警示，並伴隨畫面震動與彩帶特效。
-* **🏆 成績分級與分享**：根據得分獲得不同稱號 (如 LEGENDARY)，並支援 **一鍵截圖分享** 功能，讓您輕鬆將成績單複製給朋友。
 
 ### 📚 專業學習工具箱
 * **📖 權威字典整合**：單字卡內建 **Cambridge Dictionary** 直連按鈕，一鍵查詢權威例句與發音。
-* **🏷️ 詞性標註 (POS)**：清楚標示單字詞性 (n., vt., adj., adv.)，精準掌握用法。
-* **📋 點擊即查 (Click-to-Copy)**：閱讀時點擊任意單字，系統會自動朗讀並將單字複製到剪貼簿，方便筆記。
-* **🗣️ 多國口音朗讀**：內建懸浮播放器，支援切換 **🇺🇸 美式 / 🇬🇧 英式 / 🇦🇺 澳式** 口音，訓練不同腔調的聽力。
-
-### 🛡️ 極致的使用者體驗
-* **智慧記憶 (Smart Memory)**：自動儲存您的 API Key 於本地端，無需重複輸入。
-* **防崩潰架構 (Crash-Proof)**：採用邏輯分離設計，確保音效或網路波動不會影響課程結算，保證 100% 順暢體驗。
-* **防呆介面設計**：經過優化的介面結構 (Input Safe Mode)，確保在各種裝置上都能流暢操作。
+* **🗣️ 智能分段朗讀 (Smart Chunking)**：(v2.2 技術優化) 改寫語音引擎，採用 **每 15 字分段朗讀** 技術，徹底解決長文章導致瀏覽器 Highlight 游標消失的 Bug，確保跟讀體驗 100% 順暢。
+* **📋 點擊即查 (Click-to-Copy)**：閱讀時點擊任意單字，系統會自動朗讀並將單字複製到剪貼簿。
 
 ---
 
 ## 🚀 快速開始 (Getting Started)
 
-1.  **下載專案**：點擊右上角的 `Code` -> `Download ZIP`，解壓縮後找到 `index.html`。
-2.  **開啟網頁**：直接雙擊 `index.html`，使用 **Chrome**、**Edge** 或 **Safari** 瀏覽器開啟。
-3.  **輸入金鑰**：在設定面板貼上您的 **Google Gemini API Key** (首次使用需輸入，系統會自動記憶)。
-4.  **開始學習**：
-    * 選擇新聞來源或輸入感興趣的主題。
-    * **點擊骰子** 決定文章長度。
-    * 按下 **Generate**，享受您的專屬課程！
+### 方式一：建立新課程
+1.  **下載專案**：下載 `index.html`。
+2.  **開啟網頁**：直接雙擊用瀏覽器開啟（推薦 Chrome / Edge）。
+3.  **輸入金鑰**：在設定面板貼上您的 **Google Gemini API Key**。
+4.  **開始生成**：選擇主題、擲骰子、按下 Generate。
+
+### 方式二：接受朋友挑戰
+1.  取得朋友傳來的 **.json 挑戰檔** 或 **代碼**。
+2.  在首頁點擊 **"Select Challenge File"** 或貼上代碼。
+3.  系統將自動解碼並載入課程，直接開始考試！
 
 ---
 
@@ -64,11 +80,14 @@
 
 * **Frontend**: Pure HTML5, JavaScript (ES6+).
 * **Styling**: Tailwind CSS (CDN) - RWD & Modern Design.
-* **AI Engine**: Google Gemini API (3.0 Flash / Pro).
+* **AI Engine**: Google Gemini API (1.5 Flash / Pro, 3.0 Preview).
+* **Core Libraries (Embedded)**:
+    * `LZ-String`: 字串壓縮演算法。
+    * `CompressionStream (GZIP)`: 瀏覽器原生二進位壓縮。
 * **External Libraries**:
     * `FontAwesome`: UI Icons.
     * `Canvas Confetti`: Visual effects.
-    * `HTML2Canvas`: Snapshot generation.
+    * `HTML2Canvas`: 用於生成文章、單字與成績單的截圖。
     * `RSS2JSON`: Real-time news feed processing.
 
 ---
@@ -76,7 +95,7 @@
 ## 🔗 關於專案 (About)
 
 * **Project:** SAT Smart Reader Pro
-* **Version:** 1.0.0 (Initial Release)
+* **Version:** 2.3.0 (Snapshot Ecosystem)
 * **Author:** James Cheng
 * **GitHub Repository:** [https://github.com/JamesWCCheng/Smart-Reader-Pro](https://github.com/JamesWCCheng/Smart-Reader-Pro)
 

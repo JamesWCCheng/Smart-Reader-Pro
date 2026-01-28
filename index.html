@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAT Reader v1.0 Pro</title>
+    <title>SAT Reader v2.3 (Vocab Share)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,16 +18,10 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                        anime: ['Bangers', 'cursive'],
-                    },
-                    colors: {
-                        brand: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95' }
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'], anime: ['Bangers', 'cursive'] },
+                    colors: { brand: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95' } },
                     animation: {
-                        'dice-drop': 'diceDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        'dice-drop': 'diceDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
                         'combo-pop': 'popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
                         'flash-red': 'flashRed 0.5s ease-out',
                         'flash-gold': 'flashGold 1s ease-out infinite',
@@ -35,12 +29,7 @@
                         'hiker-bounce': 'bounce 0.5s infinite',
                     },
                     keyframes: {
-                        diceDrop: { 
-                            '0%': { transform: 'translateY(-300px) rotate(0deg) scale(0.5)', opacity: '0' }, 
-                            '60%': { transform: 'translateY(10px) rotate(720deg) scale(1.1)', opacity: '1' },
-                            '80%': { transform: 'translateY(-5px) rotate(720deg) scale(1)' },
-                            '100%': { transform: 'translateY(0) rotate(720deg) scale(1)' } 
-                        },
+                        diceDrop: { '0%': { transform: 'translateY(-300px) rotate(0deg) scale(0.5)', opacity: '0' }, '60%': { transform: 'translateY(10px) rotate(720deg) scale(1.1)', opacity: '1' }, '100%': { transform: 'translateY(0) rotate(720deg) scale(1)' } },
                         popIn: { '0%': { transform: 'scale(0) rotate(-10deg)', opacity: '0' }, '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' } },
                         flashRed: { '0%': { backgroundColor: 'rgba(239, 68, 68, 0.5)' }, '100%': { backgroundColor: 'white' } },
                         flashGold: { '0%, 100%': { boxShadow: '0 0 10px #fbbf24' }, '50%': { boxShadow: '0 0 20px #f59e0b' } },
@@ -53,7 +42,7 @@
 
     <style>
         body { background-color: #f1f5f9; color: #1e293b; }
-        input, select, button, textarea { pointer-events: auto !important; z-index: 9999 !important; }
+        input, select, button, textarea { pointer-events: auto !important; z-index: 50 !important; }
         .word-span { cursor: copy; border-radius: 4px; padding: 2px 1px; transition: background-color 0.1s; display: inline-block; }
         .word-span:hover { background-color: #ddd6fe; color: #4c1d95; }
         .cursor-copy { cursor: copy; }
@@ -65,9 +54,6 @@
         .rank-badge { font-family: 'Bangers', cursive; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
         .mountain-track-bg { background: linear-gradient(to right, #ecfccb 0%, #a5f3fc 50%, #e0e7ff 100%); border: 1px solid #cbd5e1; }
         .climber-icon { transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); position: absolute; top: -14px; font-size: 2rem; filter: drop-shadow(2px 2px 0px white); z-index: 50; }
-        
-        /* New Dice Style */
-        .dice-container { perspective: 1000px; }
         .dice-icon-large { font-size: 3rem; color: #7c3aed; filter: drop-shadow(0 4px 6px rgba(124, 58, 237, 0.3)); }
     </style>
 </head>
@@ -104,7 +90,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <a href="https://github.com/JamesWCCheng/Smart-Reader-Pro" target="_blank" class="text-slate-400 hover:text-slate-800 transition-colors text-2xl" title="View on GitHub"><i class="fa-brands fa-github"></i></a>
-                <div class="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded">v1.0 Pro</div>
+                <div class="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded">v2.3 Pro</div>
             </div>
         </div>
     </nav>
@@ -183,11 +169,13 @@
                     <button onclick="switchTab('quiz')" id="tab-quiz" class="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50">Quiz</button>
                 </div>
             </div>
+            
             <div id="view-preview" class="space-y-6">
-                <div class="clean-card p-6 border-l-4 border-brand-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Key Vocabulary</h3><div id="vocab-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
+                <div id="vocab-card" class="clean-card p-6 border-l-4 border-brand-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Key Vocabulary</h3><div id="vocab-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
                 <div class="clean-card p-6 border-l-4 border-fuchsia-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Grammar Focus</h3><div class="space-y-4"><div class="p-4 bg-slate-50 rounded-lg border border-slate-200"><p class="text-xs font-bold text-slate-400 uppercase mb-1">English</p><p id="grammar-en" class="text-slate-800"></p></div><div class="p-4 bg-white rounded-lg border border-slate-200"><p class="text-xs font-bold text-slate-400 uppercase mb-1">Chinese</p><p id="grammar-zh" class="text-slate-600"></p></div></div></div>
                 <div class="text-center pt-2"><button onclick="switchTab('reading')" class="bg-brand-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-brand-700">Start Reading</button></div>
             </div>
+            
             <div id="view-reading" class="hidden relative">
                 <div class="clean-card p-6 md:p-12 relative">
                     <div class="border-b border-slate-200 pb-4 mb-6"><h2 id="article-title" class="text-3xl md:text-5xl font-anime text-brand-700 mb-3 leading-tight"></h2><div id="source-meta-container" class="flex flex-col md:flex-row md:items-center gap-3"></div></div>
@@ -195,15 +183,27 @@
                 </div>
                 <div class="text-center mt-8 pb-20"><button onclick="switchTab('quiz')" class="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-emerald-700">Start Quiz</button></div>
             </div>
+            
             <div id="view-quiz" class="hidden pb-24 mt-24">
                 <div id="quiz-container" class="space-y-8"></div>
-                <div id="quiz-summary" class="hidden text-center clean-card p-8 mt-12 border-t-8 border-yellow-400">
+                <div id="quiz-summary" class="hidden text-center clean-card p-8 mt-12 border-t-8 border-yellow-400 bg-white">
                     <div class="mb-4"><div class="text-5xl text-yellow-500 mb-2 drop-shadow-md"><i class="fa-solid fa-crown"></i></div><h3 class="text-2xl font-bold text-slate-800 uppercase tracking-wide">Quiz Complete!</h3></div>
+                    
+                    <div id="summary-article-info" class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl text-left">
+                        <h4 class="font-bold text-lg text-brand-700 mb-1" id="summary-title"></h4>
+                        <div class="inline-block bg-white text-xs font-bold px-2 py-1 rounded border border-blue-200 text-slate-500 mb-3 cursor-pointer hover:bg-blue-100 hover:text-blue-600 transition active:scale-95" id="summary-difficulty" title="Click to Copy Difficulty" onclick="copyDifficulty()"></div>
+                        <div class="text-sm font-bold text-slate-500 uppercase mb-2">✨ Key Takeaways</div>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700" id="summary-takeaways"></ul>
+                    </div>
+
                     <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-6 max-w-sm mx-auto"><div class="text-sm text-slate-400 font-bold uppercase mb-1">Total Score</div><div class="text-5xl font-black text-brand-600 mb-2"><span id="final-score">0</span><span class="text-xl text-slate-400">/100</span></div><div id="final-rank" class="rank-badge text-2xl text-orange-500">Unranked</div></div>
-                    <div class="flex flex-col md:flex-row justify-center gap-4">
-                        <button onclick="shareScore()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition shadow-lg transform active:scale-95"><i class="fa-solid fa-camera"></i> Share Score</button>
-                        <button onclick="generateNewQuiz()" class="bg-brand-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-700"><i class="fa-solid fa-rotate"></i> New Questions <div id="spinner-more" class="hidden loader border-t-white w-4 h-4"></div></button>
-                        <button onclick="resetAndReload()" class="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50"><i class="fa-solid fa-house"></i> New Topic</button>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="shareArticleImage()" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-sky-600 transition shadow-lg transform active:scale-95"><i class="fa-solid fa-image"></i> Share Article</button>
+                        <button onclick="shareVocabImage()" class="bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition shadow-lg transform active:scale-95"><i class="fa-solid fa-font"></i> Share Vocab</button>
+                        <button onclick="shareScore()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition shadow-lg transform active:scale-95 md:col-span-2"><i class="fa-solid fa-camera"></i> Snapshot Score</button>
+                        <button onclick="generateNewQuiz()" class="bg-brand-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-700 md:col-span-1"><i class="fa-solid fa-rotate"></i> New Questions <div id="spinner-more" class="hidden loader border-t-white w-4 h-4"></div></button>
+                        <button onclick="resetAndReload()" class="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 md:col-span-1"><i class="fa-solid fa-house"></i> New Topic</button>
                     </div>
                 </div>
             </div>
@@ -286,6 +286,54 @@
             } catch (err) { alert("Snapshot failed"); }
         }
 
+        function copyDifficulty() {
+            const text = document.getElementById('summary-difficulty').innerText;
+            if(text) navigator.clipboard.writeText(text).then(() => showToast(`📋 Copied: ${text}`));
+        }
+
+        async function shareArticleImage() {
+            const readingView = document.getElementById('view-reading');
+            const quizView = document.getElementById('view-quiz');
+            quizView.classList.add('hidden');
+            readingView.classList.remove('hidden');
+            const element = readingView.querySelector('.clean-card');
+            
+            try {
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                canvas.toBlob(blob => {
+                    const item = new ClipboardItem({ "image/png": blob });
+                    navigator.clipboard.write([item]).then(() => showToast("📸 Article Image Copied!")).catch(err => alert("Copy failed."));
+                });
+            } catch (err) { alert("Snapshot failed"); }
+            finally {
+                readingView.classList.add('hidden');
+                quizView.classList.remove('hidden');
+            }
+        }
+
+        // --- NEW: SHARE VOCAB IMAGE ---
+        async function shareVocabImage() {
+            const previewView = document.getElementById('view-preview');
+            const quizView = document.getElementById('view-quiz');
+            // Target the specific ID I added to the HTML
+            const element = document.getElementById('vocab-card'); 
+
+            quizView.classList.add('hidden');
+            previewView.classList.remove('hidden');
+            
+            try {
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                canvas.toBlob(blob => {
+                    const item = new ClipboardItem({ "image/png": blob });
+                    navigator.clipboard.write([item]).then(() => showToast("📸 Vocab Card Copied!")).catch(err => alert("Copy failed."));
+                });
+            } catch (err) { alert("Snapshot failed"); }
+            finally {
+                previewView.classList.add('hidden');
+                quizView.classList.remove('hidden');
+            }
+        }
+
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
@@ -303,12 +351,10 @@
             const btn = document.getElementById('dice-btn');
             const icon = document.getElementById('dice-icon');
             
-            // New Animation Class
-            icon.classList.remove('dice-icon-large'); // Reset
-            void icon.offsetWidth; // Trigger reflow
+            icon.classList.remove('dice-icon-large'); 
+            void icon.offsetWidth; 
             icon.classList.add('animate-dice-drop');
             
-            // Wait for anim
             setTimeout(() => {
                icon.classList.remove('animate-dice-drop');
                icon.classList.add('dice-icon-large');
@@ -426,7 +472,7 @@
             Rules: 
             1. Article/Quiz in English. 
             2. ALL Explanations/Definitions MUST be in **Traditional Chinese (Taiwan / 繁體中文)** ONLY. Do NOT use Simplified Chinese.
-            Output JSON: { "title":"", "article":"", "sourceMeta":"(Based on...)", "vocabulary":[{"word":"", "pos":"(e.g. n., v.)", "def":"", "trans":"", "ex":""}], "grammar":{"en":"","zh":""}, "quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}] }. Req: 6 vocab, 10 questions.`;
+            Output JSON: { "title":"", "article":"", "difficulty":"(e.g. CEFR B2 / Lexile 1000)", "takeaways":["Point 1", "Point 2", "Point 3"], "sourceMeta":"(Based on...)", "vocabulary":[{"word":"", "pos":"(e.g. n., v.)", "def":"", "trans":"", "ex":""}], "grammar":{"en":"","zh":""}, "quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}] }. Req: 6 vocab, 10 questions.`;
 
             try {
                 const data = await callGemini(key, model, prompt);
@@ -590,6 +636,23 @@
                 document.getElementById('quiz-summary').classList.remove('hidden'); 
                 document.getElementById('final-score').innerText = userScore;
                 document.getElementById('final-rank').innerText = getRankTitle(userScore);
+                
+                // Populate Summary Data
+                document.getElementById('summary-title').innerText = courseData.title;
+                document.getElementById('summary-difficulty').innerText = courseData.difficulty || "Level: Unknown";
+                
+                const takeawaysList = document.getElementById('summary-takeaways');
+                takeawaysList.innerHTML = '';
+                if(courseData.takeaways && courseData.takeaways.length > 0) {
+                    courseData.takeaways.forEach(pt => {
+                        const li = document.createElement('li');
+                        li.innerText = pt;
+                        takeawaysList.appendChild(li);
+                    });
+                } else {
+                    takeawaysList.innerHTML = '<li>No summary available.</li>';
+                }
+
                 setTimeout(()=>document.getElementById('quiz-summary').scrollIntoView({behavior:'smooth'}), 600);
             } else {
                 setTimeout(() => { const next = document.getElementById(`q-card-${qIdx+1}`); if(next) next.scrollIntoView({behavior:'smooth', block:'center'}); }, 800);
@@ -612,42 +675,69 @@
             synth.speak(u); 
         }
 
+        // --- 5. CHUNKED READ ALOUD LOGIC (Fixes Google Voice Highlight) ---
         function toggleReadAloud() {
             if(isReading) { 
                 synth.cancel(); isReading=false; updateAudioUI("Resume"); 
             } else {
                 if(!wordSpansCache.length) return;
+                isReading = true; 
+                updateAudioUI("Pause"); 
+                document.getElementById('btn-stop').classList.remove('hidden');
                 
-                const txt = wordSpansCache.slice(currentWordIndex).map(s=>s.innerText).join(" ");
-                readingUtterance = new SpeechSynthesisUtterance(txt); 
-                readingUtterance.voice=getVoice(); 
-                readingUtterance.rate=0.9;
-                
-                const startIndex = currentWordIndex; 
-                let localIndex = 0;
-
-                readingUtterance.onboundary = (e) => {
-                    if(e.name === 'word') {
-                        const targetIndex = startIndex + localIndex;
-                        if(targetIndex < wordSpansCache.length) {
-                            // Update Global State
-                            currentWordIndex = targetIndex;
-                            
-                            // Highlight
-                            document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current'));
-                            const target = wordSpansCache[targetIndex];
-                            if(target) {
-                                target.classList.add('highlight-current');
-                                target.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
-                            }
-                        }
-                        localIndex++;
-                    }
-                };
-                
-                readingUtterance.onend = () => { isReading=false; updateAudioUI("Read"); document.getElementById('btn-stop').classList.add('hidden'); };
-                isReading=true; updateAudioUI("Pause"); document.getElementById('btn-stop').classList.remove('hidden'); synth.speak(readingUtterance);
+                // Start the recursive chunking
+                speakChunk();
             }
+        }
+        
+        function speakChunk() {
+            if(!isReading || currentWordIndex >= wordSpansCache.length) {
+                // Done or stopped
+                if (currentWordIndex >= wordSpansCache.length) {
+                   isReading=false; updateAudioUI("Read"); document.getElementById('btn-stop').classList.add('hidden');
+                }
+                return;
+            }
+            
+            // Define Chunk Size (20 words is safe)
+            const CHUNK_SIZE = 20;
+            const endIndex = Math.min(currentWordIndex + CHUNK_SIZE, wordSpansCache.length);
+            
+            // Get text for this chunk
+            const chunkText = wordSpansCache.slice(currentWordIndex, endIndex).map(s=>s.innerText).join(" ");
+            
+            const chunkUtterance = new SpeechSynthesisUtterance(chunkText);
+            chunkUtterance.voice = getVoice();
+            chunkUtterance.rate = 0.9;
+            
+            // Capture state for this chunk's boundaries
+            const startIndex = currentWordIndex;
+            let localWordCount = 0;
+
+            chunkUtterance.onboundary = (e) => {
+                if(e.name === 'word') {
+                    const targetIndex = startIndex + localWordCount;
+                    if(targetIndex < wordSpansCache.length) {
+                         // Update UI
+                         document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current'));
+                         const el = wordSpansCache[targetIndex];
+                         if(el) {
+                             el.classList.add('highlight-current');
+                             el.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+                         }
+                    }
+                    localWordCount++;
+                }
+            };
+            
+            chunkUtterance.onend = () => {
+                if(isReading) {
+                    currentWordIndex += CHUNK_SIZE; // Advance global index
+                    speakChunk(); // Trigger next chunk
+                }
+            };
+            
+            synth.speak(chunkUtterance);
         }
 
         function stopReadAloud() { synth.cancel(); isReading=false; currentWordIndex=0; updateAudioUI("Read"); document.getElementById('btn-stop').classList.add('hidden'); document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current')); }
