@@ -55,6 +55,97 @@
         .mountain-track-bg { background: linear-gradient(to right, #ecfccb 0%, #a5f3fc 50%, #e0e7ff 100%); border: 1px solid #cbd5e1; }
         .climber-icon { transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); position: absolute; top: -14px; font-size: 2rem; filter: drop-shadow(2px 2px 0px white); z-index: 50; }
         .dice-icon-large { font-size: 3rem; color: #7c3aed; filter: drop-shadow(0 4px 6px rgba(124, 58, 237, 0.3)); }
+        
+        /* --- 3D DICE UPGRADE --- */
+        .dice-scene {
+            width: 80px;
+            height: 80px;
+            perspective: 600px;
+            margin: 0 auto;
+        }
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(-40px);
+            transition: transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .cube-face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.06), 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .face-1  { transform: rotateY(0deg) translateZ(40px); }
+        .face-2  { transform: rotateY(90deg) translateZ(40px); }
+        .face-3  { transform: rotateY(180deg) translateZ(40px); }
+        .face-4  { transform: rotateY(-90deg) translateZ(40px); }
+        .face-5  { transform: rotateX(90deg) translateZ(40px); }
+        .face-6  { transform: rotateX(-90deg) translateZ(40px); }
+        
+        .dice-dots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 4px;
+            width: 44px;
+            height: 44px;
+            padding: 4px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            align-self: center;
+            justify-self: center;
+        }
+        /* Face Dot Layouts */
+        .face-1 .dot-center { grid-column: 2; grid-row: 2; background-color: #10b981; width: 14px; height: 14px; }
+        .face-2 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
+        .face-2 .dot-2 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
+        .face-3 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
+        .face-3 .dot-2 { grid-column: 2; grid-row: 2; background-color: #3b82f6; }
+        .face-3 .dot-3 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
+        .face-4 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
+        .face-4 .dot-2 { grid-column: 3; grid-row: 1; background-color: #3b82f6; }
+        .face-4 .dot-3 { grid-column: 1; grid-row: 3; background-color: #3b82f6; }
+        .face-4 .dot-4 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
+        .face-5 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
+        .face-5 .dot-2 { grid-column: 3; grid-row: 1; background-color: #3b82f6; }
+        .face-5 .dot-3 { grid-column: 2; grid-row: 2; background-color: #3b82f6; }
+        .face-5 .dot-4 { grid-column: 1; grid-row: 3; background-color: #3b82f6; }
+        .face-5 .dot-5 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
+        .face-6 .dot-1 { grid-column: 1; grid-row: 1; background-color: #8b5cf6; }
+        .face-6 .dot-2 { grid-column: 3; grid-row: 1; background-color: #8b5cf6; }
+        .face-6 .dot-3 { grid-column: 1; grid-row: 2; background-color: #8b5cf6; }
+        .face-6 .dot-4 { grid-column: 3; grid-row: 2; background-color: #8b5cf6; }
+        .face-6 .dot-5 { grid-column: 1; grid-row: 3; background-color: #8b5cf6; }
+        .face-6 .dot-6 { grid-column: 3; grid-row: 3; background-color: #8b5cf6; }
+        
+        .dice-label {
+            font-size: 8px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: -2px;
+            opacity: 0.8;
+        }
+        .neon-glow-box {
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.15), inset 0 0 15px rgba(124, 58, 237, 0.05);
+            transition: box-shadow 0.5s ease;
+        }
+        .neon-glow-box.glow-short { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.1); }
+        .neon-glow-box.glow-medium { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), inset 0 0 15px rgba(59, 130, 246, 0.1); }
+        .neon-glow-box.glow-long { box-shadow: 0 0 25px rgba(139, 92, 246, 0.4), inset 0 0 15px rgba(139, 92, 246, 0.1); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans overflow-x-hidden">
@@ -140,12 +231,39 @@
                 <p class="text-xs text-purple-400 mt-2">Ask your friend to email you the file!</p>
             </div>
 
-            <div class="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center relative overflow-hidden">
+            <div id="dice-panel" class="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center relative overflow-hidden neon-glow-box">
                 <h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest">Step 1: Roll for Length</h3>
                 <div class="flex items-center gap-8 z-10">
-                    <button onclick="rollDice()" id="dice-btn" class="group relative w-24 h-24 bg-white border-2 border-slate-200 rounded-2xl shadow-xl flex items-center justify-center hover:bg-brand-50 transition-all transform hover:scale-105 active:scale-95">
-                        <i id="dice-icon" class="fa-solid fa-dice-d20 dice-icon-large"></i>
-                    </button>
+                    <div id="dice-btn" onclick="rollDice()" class="relative w-24 h-24 bg-white border-2 border-slate-200 rounded-2xl shadow-xl flex items-center justify-center hover:bg-brand-50 transition-all transform hover:scale-105 active:scale-95 cursor-pointer">
+                        <div class="dice-scene">
+                            <div class="cube" id="cube">
+                                <div class="cube-face face-1">
+                                    <div class="dice-dots"><div class="dot dot-center"></div></div>
+                                    <div class="dice-label text-emerald-600">Short</div>
+                                </div>
+                                <div class="cube-face face-2">
+                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div></div>
+                                    <div class="dice-label text-blue-600">Med</div>
+                                </div>
+                                <div class="cube-face face-3">
+                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div></div>
+                                    <div class="dice-label text-blue-600">Med</div>
+                                </div>
+                                <div class="cube-face face-4">
+                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div></div>
+                                    <div class="dice-label text-blue-600">Med</div>
+                                </div>
+                                <div class="cube-face face-5">
+                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div></div>
+                                    <div class="dice-label text-blue-600">Med</div>
+                                </div>
+                                <div class="cube-face face-6">
+                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div></div>
+                                    <div class="dice-label text-purple-600">Long</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="text-left">
                         <div class="text-xs font-bold text-slate-400 uppercase mb-1">Rolls Left: <span id="roll-count" class="text-brand-600 text-lg">2</span></div>
                         <div id="dice-result" class="text-3xl font-serif font-bold text-slate-300">Tap Dice</div>
@@ -414,25 +532,111 @@
             speakOne(text, idx);
         }
 
+        function playRollSound() {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                let now = audioCtx.currentTime;
+                const bounces = 6;
+                let t = now;
+                for (let i = 0; i < bounces; i++) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(160 + Math.random() * 40 - i * 15, t);
+                    gain.gain.setValueAtTime(0.12, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.08);
+                    t += 0.12 + (i * 0.08);
+                }
+                setTimeout(() => {
+                    playTone(587.33, 'sine', 0.12);
+                    setTimeout(() => playTone(880, 'sine', 0.25), 80);
+                }, 1400);
+            } catch (e) {
+                console.warn("Roll sound failed", e);
+            }
+        }
+
         function rollDice() {
             if (diceRolls >= maxRolls) return;
             const btn = document.getElementById('dice-btn');
-            const icon = document.getElementById('dice-icon');
-            icon.classList.remove('dice-icon-large'); void icon.offsetWidth; icon.classList.add('animate-dice-drop');
-            setTimeout(() => { icon.classList.remove('animate-dice-drop'); icon.classList.add('dice-icon-large'); }, 800);
+            const cube = document.getElementById('cube');
+            if (!cube) return;
 
-            const r = Math.random();
+            btn.style.pointerEvents = 'none';
+            playRollSound();
+
+            // Choose target face
+            // Face 1 (16.6%): SHORT
+            // Face 2, 3, 4, 5 (66.6%): MEDIUM
+            // Face 6 (16.6%): LONG
+            const roll = Math.floor(Math.random() * 6) + 1;
+            
             let label = "", colorClass = "";
-            if (r < 0.15) { label = "SHORT"; colorClass = "text-green-600"; selectedLength = "Short"; } else if (r < 0.75) { label = "MEDIUM"; colorClass = "text-blue-600"; selectedLength = "Medium"; } else { label = "LONG"; colorClass = "text-purple-600"; selectedLength = "Long"; }
+            if (roll === 1) { 
+                label = "SHORT"; colorClass = "text-green-600"; selectedLength = "Short"; 
+            } else if (roll === 6) { 
+                label = "LONG"; colorClass = "text-purple-600"; selectedLength = "Long"; 
+            } else { 
+                label = "MEDIUM"; colorClass = "text-blue-600"; selectedLength = "Medium"; 
+            }
+
+            const baseAngles = [
+                { x: 0, y: 0 },       // Face 1
+                { x: 0, y: -90 },     // Face 2
+                { x: 0, y: -180 },    // Face 3
+                { x: 0, y: 90 },      // Face 4
+                { x: -90, y: 0 },     // Face 5
+                { x: 90, y: 0 }       // Face 6
+            ];
+
+            const angles = baseAngles[roll - 1];
+            const spins = 3; // Number of full spins
+            const extraX = Math.floor(Math.random() * 3) * 360;
+            const extraY = Math.floor(Math.random() * 3) * 360;
+            const targetX = angles.x + (spins * 360) + extraX;
+            const targetY = angles.y + (spins * 360) + extraY;
+
+            // Spin off-axis for premium 3D feeling
+            cube.style.transform = `translateZ(-40px) rotateX(${targetX}deg) rotateY(${targetY}deg) rotateZ(45deg)`;
+
             diceRolls++;
             document.getElementById('roll-count').innerText = maxRolls - diceRolls;
-            document.getElementById('dice-result').innerText = label;
-            document.getElementById('dice-result').className = `text-3xl font-serif font-bold ${colorClass}`;
-            document.getElementById('generate-btn').disabled = false;
-            document.getElementById('generate-btn').classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
-            document.getElementById('generate-btn').classList.add('bg-brand-600', 'text-white', 'hover:bg-brand-700', 'shadow-lg');
-            document.getElementById('btn-text').innerText = `Generate ${selectedLength}`;
-            if (diceRolls >= maxRolls) { btn.disabled = true; btn.classList.add('opacity-50'); }
+
+            setTimeout(() => {
+                const rect = btn.getBoundingClientRect();
+                const x = (rect.left + rect.width / 2) / window.innerWidth;
+                const y = (rect.top + rect.height / 2) / window.innerHeight;
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { x: x, y: y },
+                    colors: selectedLength === "Short" ? ['#10b981', '#34d399'] : selectedLength === "Medium" ? ['#3b82f6', '#60a5fa'] : ['#8b5cf6', '#a78bfa']
+                });
+
+                const panel = document.getElementById('dice-panel');
+                panel.classList.remove('glow-short', 'glow-medium', 'glow-long');
+                if (selectedLength === "Short") panel.classList.add('glow-short');
+                else if (selectedLength === "Medium") panel.classList.add('glow-medium');
+                else if (selectedLength === "Long") panel.classList.add('glow-long');
+
+                document.getElementById('dice-result').innerText = label;
+                document.getElementById('dice-result').className = `text-3xl font-serif font-bold ${colorClass}`;
+                document.getElementById('generate-btn').disabled = false;
+                document.getElementById('generate-btn').classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+                document.getElementById('generate-btn').classList.add('bg-brand-600', 'text-white', 'hover:bg-brand-700', 'shadow-lg');
+                document.getElementById('btn-text').innerText = `Generate ${selectedLength}`;
+
+                if (diceRolls < maxRolls) {
+                    btn.style.pointerEvents = 'auto';
+                } else {
+                    btn.classList.add('opacity-50');
+                    btn.style.pointerEvents = 'none';
+                }
+            }, 1800);
         }
 
         function toggleSourceInput() {
