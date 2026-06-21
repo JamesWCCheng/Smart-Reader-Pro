@@ -9,10 +9,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- CDN with fallback system -->
+    <script src="https://cdn.tailwindcss.com" onerror="loadFallback('tailwind')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" onerror="loadFallback('fontawesome')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" onerror="loadFallback('confetti')"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" onerror="loadFallback('html2canvas')"></script>
+    <script>
+        // CDN Fallback Loader
+        const _cdnLoadStatus = {};
+        function loadFallback(lib) {
+            if (_cdnLoadStatus[lib]) return; // prevent double-load
+            _cdnLoadStatus[lib] = 'loading';
+            console.warn(`[CDN Fallback] Primary CDN failed for ${lib}, loading backup...`);
+            const s = document.createElement('script');
+            const fallbacks = {
+                'tailwind': 'https://unpkg.com/@tailwindcss/browser@4',
+                'fontawesome': 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/js/all.min.js',
+                'confetti': 'https://unpkg.com/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
+                'html2canvas': 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+            };
+            s.src = fallbacks[lib];
+            s.onerror = () => {
+                console.warn(`[CDN Fallback] Backup CDN also failed for ${lib}. Feature will be degraded.`);
+                _cdnLoadStatus[lib] = 'failed';
+            };
+            s.onload = () => { _cdnLoadStatus[lib] = 'loaded'; console.log(`[CDN Fallback] ${lib} loaded from backup.`); };
+            document.head.appendChild(s);
+        }
+    </script>
 
     <script>
         tailwind.config = {
@@ -146,6 +170,22 @@
         .neon-glow-box.glow-short { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.1); }
         .neon-glow-box.glow-medium { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), inset 0 0 15px rgba(59, 130, 246, 0.1); }
         .neon-glow-box.glow-long { box-shadow: 0 0 25px rgba(139, 92, 246, 0.4), inset 0 0 15px rgba(139, 92, 246, 0.1); }
+
+        /* Toast animations (were referenced but never defined) */
+        .animate-toast-in { animation: toastIn 0.3s ease forwards; }
+        .animate-toast-out { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn { 0% { opacity: 0; transform: translateX(-50%) translateY(20px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+
+        /* Global error overlay */
+        .error-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .error-modal { background: white; border-radius: 1rem; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center; }
+        .error-modal h3 { font-size: 1.25rem; font-weight: 700; color: #dc2626; margin-bottom: 0.5rem; }
+        .error-modal p { font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; }
+        .error-modal button { background: #7c3aed; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; margin: 0.25rem; }
+        .error-modal button:hover { background: #6d28d9; }
+        .error-modal button.secondary { background: #e2e8f0; color: #475569; }
+        .error-modal button.secondary:hover { background: #cbd5e1; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans overflow-x-hidden">
@@ -344,6 +384,79 @@
     </main>
 
     <script>
+        // ==========================================
+        // GLOBAL ERROR HANDLER — catches unhandled errors
+        // ==========================================
+        let _lastError = null;
+        let _lastAction = null; // tracks what we were doing when error hit
+        window.onerror = function(msg, src, line, col, err) {
+            console.error('[Global Error]', msg, src, line, col, err);
+            _lastError = { msg, src, line, col, err };
+            // Only show modal for critical runtime errors, not for CDN loading issues (those are handled separately)
+            if (src && !src.includes('cdn') && !src.includes('unpkg')) {
+                showErrorModal(`Runtime Error: ${msg}`, 'An unexpected error occurred. You can retry or reload the page.');
+            }
+            return true; // Prevent default browser error handling
+        };
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('[Unhandled Promise Rejection]', e.reason);
+            // Don't show modal for network errors during fetch — those are handled by callGemini
+        });
+
+        function showErrorModal(title, message) {
+            // Remove existing modal if any
+            const existing = document.getElementById('global-error-overlay');
+            if (existing) existing.remove();
+            const overlay = document.createElement('div');
+            overlay.id = 'global-error-overlay';
+            overlay.className = 'error-overlay';
+            overlay.innerHTML = `<div class="error-modal">
+                <h3>⚠️ ${title}</h3>
+                <p>${message}</p>
+                <div>
+                    <button onclick="dismissErrorAndRetry()">🔄 Retry Last Action</button>
+                    <button class="secondary" onclick="document.getElementById('global-error-overlay').remove()">Dismiss</button>
+                    <button class="secondary" onclick="location.reload()">↻ Reload Page</button>
+                </div>
+            </div>`;
+            document.body.appendChild(overlay);
+        }
+        function dismissErrorAndRetry() {
+            document.getElementById('global-error-overlay')?.remove();
+            if (_lastAction === 'generate' && typeof startApp === 'function') {
+                startApp();
+            } else if (_lastAction === 'newQuiz' && typeof generateNewQuiz === 'function') {
+                generateNewQuiz();
+            } else {
+                location.reload();
+            }
+        }
+
+        // ==========================================
+        // SAFE WRAPPERS — prevent crashes when CDN libs are missing
+        // ==========================================
+        function safeConfetti(opts) {
+            try {
+                if (typeof confetti === 'function') confetti(opts);
+            } catch (e) { console.warn('[safeConfetti] skipped:', e.message); }
+        }
+        async function safeHtml2Canvas(element, opts) {
+            if (typeof html2canvas !== 'function') {
+                showToast('⚠️ Screenshot library not loaded. Please reload.');
+                return null;
+            }
+            try {
+                return await html2canvas(element, opts);
+            } catch (e) {
+                console.warn('[safeHtml2Canvas] failed:', e.message);
+                showToast('⚠️ Screenshot failed');
+                return null;
+            }
+        }
+
+        // ==========================================
+        // CORE STATE
+        // ==========================================
         // Kill Audio on Unload
         window.addEventListener('beforeunload', () => { window.speechSynthesis.cancel(); });
 
@@ -366,6 +479,7 @@
         let currentWordIndex = 0;
         let wordSpansCache = [];
         let voices = [];
+        let currentSelectionText = ''; // FIX: was used but never declared
 
         function loadVoices() {
             voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
@@ -396,14 +510,37 @@
             'SAT Behavioral Science': ["Cognitive bias and irrational economic decisions", "Social networks and peer influence in group behavior", "Nudge theory and public health policy interventions", "Loss aversion and investor decision making", "The impact of remote work on social capital and team dynamics"]
         };
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // RSS Fallback topics — used when rss2json.com is down or rate-limited
+        const RSS_FALLBACK_TOPICS = {
+            'CNN Technology': ["How AI is transforming modern healthcare diagnostics", "The future of quantum computing and its real-world applications", "Cybersecurity threats in the age of smart devices", "How 5G networks are changing the digital landscape", "The rise of electric vehicles and sustainable technology"],
+            'BBC Science': ["New discoveries about Mars hint at ancient water systems", "How CRISPR gene editing could cure genetic diseases", "The science behind climate change and extreme weather", "Breakthrough in nuclear fusion energy research", "Exploring the deep ocean: new species discovered"],
+            'ESPN NBA': ["The evolution of three-point shooting in modern basketball", "How analytics changed NBA team strategies", "The greatest rivalries in NBA playoff history", "How the NBA draft lottery shapes franchise futures", "The impact of international players on the NBA"],
+            'The Economist': ["How central banks navigate inflation and recession risks", "The global semiconductor supply chain crisis explained", "Digital currencies and the future of banking", "Trade tensions and their impact on global markets", "The economics of renewable energy transition"],
+            'Scientific American': ["The neuroscience of memory formation and recall", "How microplastics are affecting ocean ecosystems", "The physics of black holes and gravitational waves", "Advances in renewable energy storage technology", "The human microbiome and its role in health"]
+        };
+
+        // Lazy AudioContext — only create on first user interaction
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) {
+                    console.warn('AudioContext unavailable:', e.message);
+                    return null;
+                }
+            }
+            return audioCtx;
+        }
         function playTone(freq, type, duration) {
             try {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') ctx.resume();
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + duration);
             } catch (e) { console.warn("Audio fail", e); }
         }
         function playCorrectSound() { playTone(523.25, 'sine', 0.1); setTimeout(() => playTone(659.25, 'sine', 0.2), 100); }
@@ -450,7 +587,8 @@
                                 (targetId === 'view-reading') ? document.querySelector('#view-reading .clean-card') : 
                                 document.getElementById(targetId);
 
-                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                const canvas = await safeHtml2Canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                if (!canvas) return; // safeHtml2Canvas already showed toast
                 canvas.toBlob(blob => {
                     const item = new ClipboardItem({ "image/png": blob });
                     navigator.clipboard.write([item]).then(() => showToast("📸 Image Copied!"));
@@ -534,19 +672,21 @@
 
         function playRollSound() {
             try {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                let now = audioCtx.currentTime;
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') ctx.resume();
+                let now = ctx.currentTime;
                 const bounces = 6;
                 let t = now;
                 for (let i = 0; i < bounces; i++) {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(160 + Math.random() * 40 - i * 15, t);
                     gain.gain.setValueAtTime(0.12, t);
                     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
                     osc.connect(gain);
-                    gain.connect(audioCtx.destination);
+                    gain.connect(ctx.destination);
                     osc.start(t);
                     osc.stop(t + 0.08);
                     t += 0.12 + (i * 0.08);
@@ -610,7 +750,7 @@
                 const rect = btn.getBoundingClientRect();
                 const x = (rect.left + rect.width / 2) / window.innerWidth;
                 const y = (rect.top + rect.height / 2) / window.innerHeight;
-                confetti({
+                safeConfetti({
                     particleCount: 50,
                     spread: 60,
                     origin: { x: x, y: y },
@@ -656,7 +796,7 @@
                 climber.style.left = `${pct}%`;
                 if(climberStep === 0) status.innerText = "Base Camp";
                 else if(climberStep === 5) status.innerText = "Halfway!";
-                else if(climberStep === 10) { status.innerText = "SUMMIT REACHED! 🏆"; climber.innerText = "🏆"; if(track) track.classList.add('animate-flash-gold'); confetti({ particleCount: 150, spread: 80, origin: { y: 0.2 } }); } 
+                else if(climberStep === 10) { status.innerText = "SUMMIT REACHED! 🏆"; climber.innerText = "🏆"; if(track) track.classList.add('animate-flash-gold'); safeConfetti({ particleCount: 150, spread: 80, origin: { y: 0.2 } }); } 
                 else { status.innerText = `Altitude: ${climberStep}00m`; climber.innerText = "🧗"; if(track) track.classList.remove('animate-flash-gold'); }
             } catch(e) { console.error(e); }
         }
@@ -703,12 +843,27 @@
             if (isPreset) {
                 if (RSS_FEEDS[topic]) {
                     try {
-                        const res = await fetch(RSS_FEEDS[topic]); const rss = await res.json();
+                        // Add 5s timeout to RSS fetch
+                        const controller = new AbortController();
+                        const timeout = setTimeout(() => controller.abort(), 5000);
+                        const res = await fetch(RSS_FEEDS[topic], { signal: controller.signal });
+                        clearTimeout(timeout);
+                        const rss = await res.json();
                         if (rss.items && rss.items.length > 0) {
                             const item = rss.items[Math.floor(Math.random() * Math.min(10, rss.items.length))];
                             finalTopic = item.title; sourceLink = item.link; newsContext = `Based on real news: "${item.title}". Summary: ${item.description||''}`;
+                        } else {
+                            throw new Error('No RSS items');
                         }
-                    } catch(e) { console.warn("RSS failed"); }
+                    } catch(e) {
+                        console.warn(`RSS failed for ${topic}, using fallback topic:`, e.message);
+                        // Use built-in fallback topics
+                        if (RSS_FALLBACK_TOPICS[topic]) {
+                            const fallbacks = RSS_FALLBACK_TOPICS[topic];
+                            finalTopic = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+                            newsContext = `Topic based on ${topic} category.`;
+                        }
+                    }
                 } else if (topic === 'NatGeo') {
                     finalTopic = NATGEO_TOPICS[Math.floor(Math.random() * NATGEO_TOPICS.length)]; newsContext = "Nature documentary style.";
                 } else if (ACADEMIC_TOPICS[topic]) {
@@ -719,6 +874,7 @@
             } else { newsContext = "User custom topic."; }
 
             document.getElementById('btn-text').innerText = "Writing...";
+            _lastAction = 'generate'; // Track for retry
             let lengthInstruction = selectedLength === "Short" ? "approx 250 words" : selectedLength === "Long" ? "approx 800 words" : "approx 450-500 words";
             const prompt = `Role: SAT Tutor. Level: ${grade}. TOPIC: ${finalTopic}. CONTEXT: ${newsContext}. Constraint: Write an article that is **${lengthInstruction}**. 
             Rules: 
@@ -728,30 +884,21 @@
 
             try {
                 const data = await callGemini(key, model, prompt);
+                // Validate essential response data before using it
+                if (!data || !data.article || !data.title) throw new Error('AI returned incomplete data. Please try again.');
+                if (!data.vocabulary || data.vocabulary.length === 0) data.vocabulary = [];
+                if (!data.quiz || data.quiz.length === 0) throw new Error('AI returned no quiz questions. Please try again.');
+                if (!data.grammar) data.grammar = { en: '', zh: '' };
+                
                 userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
                 document.getElementById('nav-current-score').innerText = 0;
                 document.getElementById('quiz-summary').classList.add('hidden');
                 courseData = data; courseData.sourceUrl = sourceLink; initUI();
+                _lastAction = null; // Clear on success
             } catch(e) { 
-                if (model.includes('pro') && model !== 'gemini-flash-latest') {
-                    console.warn(`Model ${model} failed, falling back to gemini-flash-latest...`);
-                    document.getElementById('btn-text').innerText = "Retrying with Flash...";
-                    try {
-                        const fallbackModel = 'gemini-flash-latest';
-                        const data = await callGemini(key, fallbackModel, prompt);
-                        userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
-                        document.getElementById('nav-current-score').innerText = 0;
-                        document.getElementById('quiz-summary').classList.add('hidden');
-                        courseData = data; courseData.sourceUrl = sourceLink; initUI();
-                        document.getElementById('modelName').value = fallbackModel;
-                        showToast("⚠️ Fell back to Gemini Flash");
-                        return;
-                    } catch(err2) {
-                        document.getElementById('error-text').innerText = `Error: ${err2.message}`; errorEl.classList.remove('hidden'); 
-                    }
-                } else {
-                    document.getElementById('error-text').innerText = `Error: ${e.message}`; errorEl.classList.remove('hidden'); 
-                }
+                console.error('startApp failed:', e);
+                document.getElementById('error-text').innerText = `Error: ${e.message}`; 
+                errorEl.classList.remove('hidden'); 
                 btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
             } 
             finally { document.getElementById('btn-text').innerText = `Generate ${selectedLength}`; document.getElementById('spinner').classList.add('hidden'); }
@@ -784,44 +931,94 @@
                 const res = await callGemini(key, model, `Translate to Traditional Chinese (Taiwan). Concise.\n\n"${currentSelectionText}"`, false);
                 document.getElementById('popup-result').innerText = res;
             } catch(e) { 
-                if (model.includes('pro')) {
-                    try {
-                        const res = await callGemini(key, 'gemini-flash-latest', `Translate to Traditional Chinese (Taiwan). Concise.\n\n"${currentSelectionText}"`, false);
-                        document.getElementById('popup-result').innerText = res;
-                    } catch(err2) {
-                        document.getElementById('popup-result').innerText = "Error: " + err2.message;
-                    }
-                } else {
-                    document.getElementById('popup-result').innerText = "Error: " + e.message; 
-                }
+                document.getElementById('popup-result').innerText = "Error: " + e.message; 
             }
             finally { document.getElementById('popup-loader').classList.add('hidden'); }
         }
         function closePopup() { document.getElementById('selection-popup').classList.add('hidden'); window.getSelection().removeAllRanges(); }
 
+        // ==========================================
+        // MODEL FALLBACK CHAIN
+        // ==========================================
+        const MODEL_FALLBACK_CHAIN = [
+            'gemini-2.0-flash',
+            'gemini-1.5-flash',
+            'gemini-flash-latest',
+            'gemini-1.5-pro',
+            'gemini-pro-latest'
+        ];
+
         async function callGemini(key, model, prompt, expectJSON = true, retryCount = 0) {
             try {
-                if (retryCount > 0) document.getElementById('btn-text').innerText = `Connection unstable... Retrying (${retryCount}/3)`;
+                if (retryCount > 0) {
+                    const btnText = document.getElementById('btn-text');
+                    if (btnText) btnText.innerText = `Connection unstable... Retrying (${retryCount}/3)`;
+                }
                 const requestBody = { contents: [{ parts: [{ text: prompt }] }] };
                 if (expectJSON) {
                     requestBody.generationConfig = { responseMimeType: "application/json" };
                 }
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(requestBody)
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(requestBody),
+                    signal: controller.signal
                 });
+                clearTimeout(timeout);
                 const json = await res.json();
-                if(json.error) throw new Error(json.error.message);
+                if(json.error) {
+                    // If model not found, try next model in fallback chain
+                    if (json.error.code === 404 || json.error.message?.includes('not found') || json.error.message?.includes('is not supported')) {
+                        const err = new Error(json.error.message);
+                        err.modelNotFound = true;
+                        throw err;
+                    }
+                    throw new Error(json.error.message);
+                }
+                // Defensive: check response structure
+                if (!json.candidates || !json.candidates[0]?.content?.parts?.[0]?.text) {
+                    throw new Error('Unexpected API response structure — no text returned');
+                }
                 let text = json.candidates[0].content.parts[0].text;
                 if (expectJSON) { 
                     const jsonMatch = text.match(/\{[\s\S]*\}/); 
                     if (!jsonMatch) throw new Error("Invalid JSON from AI");
-                    return JSON.parse(jsonMatch[0]); 
+                    const parsed = JSON.parse(jsonMatch[0]);
+                    // Validate essential fields
+                    if (parsed.vocabulary && !Array.isArray(parsed.vocabulary)) parsed.vocabulary = [];
+                    if (parsed.quiz && !Array.isArray(parsed.quiz)) parsed.quiz = [];
+                    if (parsed.grammar && typeof parsed.grammar === 'string') parsed.grammar = { en: parsed.grammar, zh: '' };
+                    if (!parsed.takeaways) parsed.takeaways = [];
+                    return parsed; 
                 } 
                 else return text;
             } catch (e) { 
-                console.warn(`Attempt ${retryCount+1} failed: ${e.message}`);
+                console.warn(`Attempt ${retryCount+1} failed (model: ${model}): ${e.message}`);
+                
+                // If model not found, try the next model in fallback chain
+                if (e.modelNotFound) {
+                    const currentIdx = MODEL_FALLBACK_CHAIN.indexOf(model);
+                    const nextModels = currentIdx >= 0 
+                        ? MODEL_FALLBACK_CHAIN.slice(currentIdx + 1) 
+                        : MODEL_FALLBACK_CHAIN;
+                    for (const fallbackModel of nextModels) {
+                        if (fallbackModel === model) continue;
+                        console.log(`[Model Fallback] Trying ${fallbackModel}...`);
+                        const btnText = document.getElementById('btn-text');
+                        if (btnText) btnText.innerText = `Model unavailable, trying ${fallbackModel}...`;
+                        try {
+                            return await callGemini(key, fallbackModel, prompt, expectJSON, 0);
+                        } catch (fallbackErr) {
+                            if (fallbackErr.modelNotFound) continue;
+                            throw fallbackErr;
+                        }
+                    }
+                    throw new Error('All models in fallback chain failed. Please check your API key permissions.');
+                }
+                
+                // Network / transient errors: retry up to 3 times
                 if (retryCount < 3) {
-                    await new Promise(r => setTimeout(r, 2000));
+                    await new Promise(r => setTimeout(r, 2000 * (retryCount + 1))); // exponential backoff
                     return callGemini(key, model, prompt, expectJSON, retryCount + 1);
                 }
                 throw e;
@@ -858,33 +1055,23 @@
         async function generateNewQuiz() {
             const key = document.getElementById('apiKey').value;
             const model = document.getElementById('modelName').value;
-            document.getElementById('spinner-more').classList.remove('hidden');
+            const spinnerEl = document.getElementById('spinner-more');
+            if (spinnerEl) spinnerEl.classList.remove('hidden');
+            _lastAction = 'newQuiz';
             try {
                 const data = await callGemini(key, model, `STRICT JSON ONLY. Context: "${courseData.title}". Task: 10 NEW SAT questions. Rules: Explanations in **Traditional Chinese (Taiwan)** ONLY. JSON: {"quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}]}`);
+                if (!data.quiz || !Array.isArray(data.quiz) || data.quiz.length === 0) throw new Error('No quiz questions returned');
                 courseData.quiz = data.quiz; 
                 userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
                 document.getElementById('nav-current-score').innerText = 0;
                 document.getElementById('quiz-summary').classList.add('hidden');
                 document.getElementById('combo-badge').classList.add('hidden');
                 renderQuiz(); window.scrollTo(0,0);
+                _lastAction = null;
             } catch(e) { 
-                if (model.includes('pro')) {
-                    try {
-                        const data = await callGemini(key, 'gemini-flash-latest', `STRICT JSON ONLY. Context: "${courseData.title}". Task: 10 NEW SAT questions. Rules: Explanations in **Traditional Chinese (Taiwan)** ONLY. JSON: {"quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}]}`);
-                        courseData.quiz = data.quiz;
-                        userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
-                        document.getElementById('nav-current-score').innerText = 0;
-                        document.getElementById('quiz-summary').classList.add('hidden');
-                        document.getElementById('combo-badge').classList.add('hidden');
-                        renderQuiz(); window.scrollTo(0,0);
-                    } catch(err2) {
-                        alert("Error: "+err2.message);
-                    }
-                } else {
-                    alert("Error: "+e.message); 
-                }
+                alert("Error: " + e.message); 
             } 
-            finally { document.getElementById('spinner-more').classList.add('hidden'); }
+            finally { if (spinnerEl) spinnerEl.classList.add('hidden'); }
         }
 
         function initUI() {
@@ -917,7 +1104,8 @@
 
         function check(qIdx, sIdx, btn) {
             try {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const ctx = getAudioContext();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
                 const q = courseData.quiz[qIdx]; const fb = document.getElementById(`fb-${qIdx}`);
                 const card = document.getElementById(`q-card-${qIdx}`);
                 document.querySelectorAll(`.opt-btn-${qIdx}`).forEach(b => { b.disabled = true; b.classList.add('opacity-60'); });
@@ -926,7 +1114,7 @@
                     btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
                     fb.querySelector('.st').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-check"></i> Correct!</span>';
                     userScore += 10; comboStreak++; 
-                    playCorrectSound(); confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+                    playCorrectSound(); safeConfetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
                     updateClimber(true);
                     if(comboStreak > 1) { const b = document.getElementById('combo-badge'); b.innerText = `COMBO x${comboStreak}`; b.classList.remove('hidden'); b.classList.add('animate-combo-pop'); setTimeout(()=>b.classList.remove('animate-combo-pop'), 300); }
                 } else {
