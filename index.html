@@ -39,6 +39,7 @@
     </script>
 
     <script>
+        try {
         tailwind.config = {
             theme: {
                 extend: {
@@ -62,6 +63,7 @@
                 }
             }
         }
+        } catch(e) { console.warn('[Tailwind] CDN not loaded, config skipped:', e.message); }
     </script>
 
     <style>
@@ -320,7 +322,7 @@
                     <div id="models-list-output" class="hidden mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-600 max-h-40 overflow-y-auto"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Model</label><select id="modelName" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="gemini-flash-latest" selected>Gemini Flash Latest (Universal Default) ★</option><option value="gemini-1.5-flash">gemini-1.5-flash (Fast & Balanced)</option><option value="gemini-2.5-flash">Gemini 2.5 Flash (Recommended)</option><option value="gemini-2.5-pro">Gemini 2.5 Pro (Best Intelligence)</option><option value="gemini-3.5-flash">Gemini 3.5 Flash (Newest)</option></select></div>
+                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Model</label><select id="modelName" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Recommended) ★</option><option value="gemini-3.5-flash">Gemini 3.5 Flash (Newest)</option><option value="gemini-2.5-pro">Gemini 2.5 Pro (Best Intelligence)</option></select></div>
                     <div><label class="block text-sm font-bold text-slate-700 mb-2">Grade</label><select id="gradeLevel" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="Grade 7">Grade 7 (Foundation)</option><option value="Grade 8">Grade 8 (Pre-SAT)</option><option value="Grade 9">Grade 9 (Freshman)</option><option value="Grade 10">Grade 10 (PSAT Prep)</option><option value="Grade 11">Grade 11 (SAT Prime)</option><option value="Grade 12">Grade 12 (Advanced)</option></select></div>
                 </div>
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
@@ -947,13 +949,12 @@
         function closePopup() { document.getElementById('selection-popup').classList.add('hidden'); window.getSelection().removeAllRanges(); }
 
         // ==========================================
-        // MODEL FALLBACK CHAIN — ordered newest to oldest
-        // Updated 2026-06 to remove all retired models
+        // MODEL FALLBACK CHAIN — only currently valid models
+        // Updated 2026-06-25: removed all deprecated/invalid aliases
+        // Order: most reliable first, then newest, then pro
         // ==========================================
         let MODEL_FALLBACK_CHAIN = [
-            'gemini-flash-latest',    // Original working alias for free tier
-            'gemini-1.5-flash',       // Reliable stable model
-            'gemini-2.5-flash',       // Current stable default
+            'gemini-2.5-flash',       // Current stable default (most reliable)
             'gemini-3.5-flash',       // Newest GA model
             'gemini-2.5-pro',         // Current pro option
         ];
@@ -1004,40 +1005,45 @@
             } catch (e) { 
                 console.warn(`Attempt ${retryCount+1} failed (model: ${model}): ${e.message}`);
                 
-                // Determine if error is transient (network issue, 503 high demand, 429 quota, 500+ server error)
+                // 404 = model doesn't exist, don't retry, go straight to fallback
+                const isModelNotFound = e.isApiError && (e.statusCode === 404 || e.statusCode === 400);
+                // Transient = network issue, 503 high demand, 429 quota, 500+ server error
                 const isTransient = !e.isApiError || e.statusCode === 503 || e.statusCode === 429 || e.statusCode >= 500;
                 
-                // 1. Retry transient errors with exponential backoff
-                if (isTransient && retryCount < 3) {
-                    const delay = 2000 * (retryCount + 1);
+                // 1. Retry transient errors with exponential backoff (skip if model doesn't exist)
+                const maxRetries = disableFallback ? 1 : 3; // Fallback models only get 1 retry
+                if (!isModelNotFound && isTransient && retryCount < maxRetries) {
+                    const delay = 1500 * (retryCount + 1);
                     const btnText = document.getElementById('btn-text');
-                    if (btnText) btnText.innerText = `High demand, retrying... (${retryCount+1}/3)`;
+                    if (btnText) btnText.innerText = `Retrying... (${retryCount+1}/${maxRetries})`;
                     await new Promise(r => setTimeout(r, delay));
                     return callGemini(key, model, prompt, expectJSON, retryCount + 1, disableFallback);
                 }
                 
-                // 2. If exhausted retries OR hard error (400, 403, 404), try fallback chain
+                // 2. If exhausted retries OR hard error, try fallback chain
                 if (!disableFallback) {
-                    console.log(`[Model Fallback] Starting chain due to failure on ${model}...`);
+                    console.log(`[Model Fallback] ${model} failed (${isModelNotFound ? 'not found' : 'error'}), trying fallbacks...`);
                     for (const fallbackModel of MODEL_FALLBACK_CHAIN) {
-                        if (fallbackModel === model) continue; // Skip the one that just failed
+                        if (fallbackModel === model) continue;
                         
                         console.log(`[Model Fallback] Trying ${fallbackModel}...`);
                         const btnText = document.getElementById('btn-text');
-                        if (btnText) btnText.innerText = `Model overloaded/unavailable, trying ${fallbackModel}...`;
+                        if (btnText) btnText.innerText = `Trying ${fallbackModel}...`;
                         
                         try {
-                            // Call with disableFallback = true to prevent recursive fallback loops
                             return await callGemini(key, fallbackModel, prompt, expectJSON, 0, true);
                         } catch (fallbackErr) {
-                            console.warn(`[Model Fallback] ${fallbackModel} also failed.`);
-                            continue; // Try next model in chain
+                            console.warn(`[Model Fallback] ${fallbackModel} failed: ${fallbackErr.message}`);
+                            continue;
                         }
                     }
-                    throw new Error(`All models failed. Last error: ${e.message}`);
+                    // All failed — give actionable error message
+                    const hint = e.statusCode === 403 ? 'Your API key may be invalid or restricted.' 
+                               : e.statusCode === 429 ? 'API quota exceeded. Wait a minute and try again.'
+                               : 'All models are unavailable. Check your API key or try again later.';
+                    throw new Error(`${hint} (${e.message})`);
                 }
                 
-                // If we are already a fallback model and we failed, throw up to the loop
                 throw e;
             }
         }
@@ -1116,10 +1122,13 @@
                 'pro': 'Best Intelligence',
                 'lite': 'Lightweight'
             };
-            // Ensure stable universally-supported aliases are always at the top
-            // API discovery doesn't return aliases, but they are often the most reliable for free tiers
-            const finalModels = ['gemini-flash-latest', 'gemini-1.5-flash'];
+            // Start with discovered models — don't inject deprecated aliases
+            const finalModels = [];
             models.forEach(m => {
+                if (!finalModels.includes(m)) finalModels.push(m);
+            });
+            // Ensure our known-good defaults are present
+            ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-2.5-pro'].forEach(m => {
                 if (!finalModels.includes(m)) finalModels.push(m);
             });
             
