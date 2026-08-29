@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAT Reader v2.4 (Ultimate)</title>
+    <title>SAT Smart Reader Pro v2.5 (AI-Powered Tutor)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     
     <!-- CDN with fallback system -->
     <script src="https://cdn.tailwindcss.com" onerror="loadFallback('tailwind')"></script>
@@ -18,7 +18,7 @@
         // CDN Fallback Loader
         const _cdnLoadStatus = {};
         function loadFallback(lib) {
-            if (_cdnLoadStatus[lib]) return; // prevent double-load
+            if (_cdnLoadStatus[lib]) return;
             _cdnLoadStatus[lib] = 'loading';
             console.warn(`[CDN Fallback] Primary CDN failed for ${lib}, loading backup...`);
             const s = document.createElement('script');
@@ -40,29 +40,30 @@
 
     <script>
         try {
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'], anime: ['Bangers', 'cursive'] },
-                    colors: { brand: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95' } },
-                    animation: {
-                        'dice-drop': 'diceDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-                        'combo-pop': 'popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
-                        'flash-red': 'flashRed 0.5s ease-out',
-                        'flash-gold': 'flashGold 1s ease-out infinite',
-                        'card-shake': 'shakeHorizontal 0.4s cubic-bezier(.36,.07,.19,.97) both',
-                        'hiker-bounce': 'bounce 0.5s infinite',
-                    },
-                    keyframes: {
-                        diceDrop: { '0%': { transform: 'translateY(-300px) rotate(0deg) scale(0.5)', opacity: '0' }, '60%': { transform: 'translateY(10px) rotate(720deg) scale(1.1)', opacity: '1' }, '100%': { transform: 'translateY(0) rotate(720deg) scale(1)' } },
-                        popIn: { '0%': { transform: 'scale(0) rotate(-10deg)', opacity: '0' }, '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' } },
-                        flashRed: { '0%': { backgroundColor: 'rgba(239, 68, 68, 0.5)' }, '100%': { backgroundColor: 'white' } },
-                        flashGold: { '0%, 100%': { boxShadow: '0 0 10px #fbbf24' }, '50%': { boxShadow: '0 0 20px #f59e0b' } },
-                        shakeHorizontal: { '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(4px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(6px, 0, 0)' } }
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'], anime: ['Bangers', 'cursive'] },
+                        colors: { 
+                            brand: { 50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95' },
+                            line: { 500: '#06C755', 600: '#05b34c', 700: '#04973f' }
+                        },
+                        animation: {
+                            'combo-pop': 'popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
+                            'flash-red': 'flashRed 0.5s ease-out',
+                            'flash-gold': 'flashGold 1s ease-out infinite',
+                            'card-shake': 'shakeHorizontal 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                            'hiker-bounce': 'bounce 0.5s infinite',
+                        },
+                        keyframes: {
+                            popIn: { '0%': { transform: 'scale(0) rotate(-10deg)', opacity: '0' }, '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' } },
+                            flashRed: { '0%': { backgroundColor: 'rgba(239, 68, 68, 0.5)' }, '100%': { backgroundColor: 'white' } },
+                            flashGold: { '0%, 100%': { boxShadow: '0 0 10px #fbbf24' }, '50%': { boxShadow: '0 0 20px #f59e0b' } },
+                            shakeHorizontal: { '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(4px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(6px, 0, 0)' } }
+                        }
                     }
                 }
-            }
-        }
+            };
         } catch(e) { console.warn('[Tailwind] CDN not loaded, config skipped:', e.message); }
     </script>
 
@@ -73,113 +74,22 @@
         .word-span:hover { background-color: #ddd6fe; color: #4c1d95; }
         .cursor-copy { cursor: copy; }
         .highlight-current { background-color: #f97316 !important; color: white !important; border-radius: 4px; box-shadow: 0 0 0 2px #f97316; transform: scale(1.05); z-index: 10; position: relative; }
-        .clean-card { background: white; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 1rem; }
+        .clean-card { background: white; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08); border-radius: 1rem; }
         .loader { border: 3px solid #e2e8f0; border-top: 3px solid #7c3aed; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .article-image { width: 100%; height: auto; border-radius: 1rem; margin: 2rem 0; }
         .rank-badge { font-family: 'Bangers', cursive; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
         .mountain-track-bg { background: linear-gradient(to right, #ecfccb 0%, #a5f3fc 50%, #e0e7ff 100%); border: 1px solid #cbd5e1; }
         .climber-icon { transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); position: absolute; top: -14px; font-size: 2rem; filter: drop-shadow(2px 2px 0px white); z-index: 50; }
-        .dice-icon-large { font-size: 3rem; color: #7c3aed; filter: drop-shadow(0 4px 6px rgba(124, 58, 237, 0.3)); }
-        
-        /* --- 3D DICE UPGRADE --- */
-        .dice-scene {
-            width: 80px;
-            height: 80px;
-            perspective: 600px;
-            margin: 0 auto;
-        }
-        .cube {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transform: translateZ(-40px);
-            transition: transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        .cube-face {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            border: 2px solid #cbd5e1;
-            background: #ffffff;
-            border-radius: 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            backface-visibility: hidden;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.06), 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        .face-1  { transform: rotateY(0deg) translateZ(40px); }
-        .face-2  { transform: rotateY(90deg) translateZ(40px); }
-        .face-3  { transform: rotateY(180deg) translateZ(40px); }
-        .face-4  { transform: rotateY(-90deg) translateZ(40px); }
-        .face-5  { transform: rotateX(90deg) translateZ(40px); }
-        .face-6  { transform: rotateX(-90deg) translateZ(40px); }
-        
-        .dice-dots {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 4px;
-            width: 44px;
-            height: 44px;
-            padding: 4px;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            align-self: center;
-            justify-self: center;
-        }
-        /* Face Dot Layouts */
-        .face-1 .dot-center { grid-column: 2; grid-row: 2; background-color: #10b981; width: 14px; height: 14px; }
-        .face-2 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
-        .face-2 .dot-2 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
-        .face-3 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
-        .face-3 .dot-2 { grid-column: 2; grid-row: 2; background-color: #3b82f6; }
-        .face-3 .dot-3 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
-        .face-4 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
-        .face-4 .dot-2 { grid-column: 3; grid-row: 1; background-color: #3b82f6; }
-        .face-4 .dot-3 { grid-column: 1; grid-row: 3; background-color: #3b82f6; }
-        .face-4 .dot-4 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
-        .face-5 .dot-1 { grid-column: 1; grid-row: 1; background-color: #3b82f6; }
-        .face-5 .dot-2 { grid-column: 3; grid-row: 1; background-color: #3b82f6; }
-        .face-5 .dot-3 { grid-column: 2; grid-row: 2; background-color: #3b82f6; }
-        .face-5 .dot-4 { grid-column: 1; grid-row: 3; background-color: #3b82f6; }
-        .face-5 .dot-5 { grid-column: 3; grid-row: 3; background-color: #3b82f6; }
-        .face-6 .dot-1 { grid-column: 1; grid-row: 1; background-color: #8b5cf6; }
-        .face-6 .dot-2 { grid-column: 3; grid-row: 1; background-color: #8b5cf6; }
-        .face-6 .dot-3 { grid-column: 1; grid-row: 2; background-color: #8b5cf6; }
-        .face-6 .dot-4 { grid-column: 3; grid-row: 2; background-color: #8b5cf6; }
-        .face-6 .dot-5 { grid-column: 1; grid-row: 3; background-color: #8b5cf6; }
-        .face-6 .dot-6 { grid-column: 3; grid-row: 3; background-color: #8b5cf6; }
-        
-        .dice-label {
-            font-size: 8px;
-            font-weight: 850;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: -2px;
-            opacity: 0.8;
-        }
-        .neon-glow-box {
-            box-shadow: 0 0 15px rgba(124, 58, 237, 0.15), inset 0 0 15px rgba(124, 58, 237, 0.05);
-            transition: box-shadow 0.5s ease;
-        }
-        .neon-glow-box.glow-short { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.1); }
-        .neon-glow-box.glow-medium { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), inset 0 0 15px rgba(59, 130, 246, 0.1); }
-        .neon-glow-box.glow-long { box-shadow: 0 0 25px rgba(139, 92, 246, 0.4), inset 0 0 15px rgba(139, 92, 246, 0.1); }
 
-        /* Toast animations (were referenced but never defined) */
+        /* Toast animations */
         .animate-toast-in { animation: toastIn 0.3s ease forwards; }
         .animate-toast-out { animation: toastOut 0.3s ease forwards; }
         @keyframes toastIn { 0% { opacity: 0; transform: translateX(-50%) translateY(20px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes toastOut { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(20px); } }
 
-        /* Global error overlay */
+        /* Modal backdrop & styling */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 1rem; }
         .error-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .error-modal { background: white; border-radius: 1rem; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center; }
         .error-modal h3 { font-size: 1.25rem; font-weight: 700; color: #dc2626; margin-bottom: 0.5rem; }
@@ -188,14 +98,27 @@
         .error-modal button:hover { background: #6d28d9; }
         .error-modal button.secondary { background: #e2e8f0; color: #475569; }
         .error-modal button.secondary:hover { background: #cbd5e1; }
+
+        /* Custom scrollbar for message previews */
+        .message-preview-scroll::-webkit-scrollbar { width: 6px; }
+        .message-preview-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .message-preview-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .message-preview-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Trending card hover animations */
+        .trending-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .trending-card:hover { transform: translateY(-2px); }
+        .trending-card.active-topic { border-color: #7c3aed !important; background-color: #f5f3ff !important; box-shadow: 0 0 0 2px #7c3aed !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans overflow-x-hidden">
 
-    <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] bg-slate-800 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold flex items-center gap-2 pointer-events-none opacity-0 transition-opacity">
-        <i class="fa-solid fa-check text-emerald-400"></i> <span id="toast-msg">Copied!</span>
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] bg-slate-800 text-white px-5 py-2.5 rounded-full shadow-2xl text-sm font-bold flex items-center gap-2 pointer-events-none opacity-0 transition-opacity">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i> <span id="toast-msg">Copied!</span>
     </div>
 
+    <!-- Translation Selection Popup -->
     <div id="selection-popup" class="hidden fixed z-[200] bg-slate-800 text-white rounded-lg shadow-xl overflow-hidden max-w-sm">
         <button id="popup-trigger" class="hidden w-full px-4 py-2 text-sm font-bold hover:bg-slate-700 flex items-center gap-2" onclick="translateSelection()">
             <i class="fa-solid fa-language"></i> Translate
@@ -210,10 +133,12 @@
         </div>
     </div>
 
-    <nav class="fixed w-full top-0 z-50 bg-white border-b border-slate-300 shadow-sm h-16 flex items-center">
-        <div class="w-full max-w-6xl mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2 text-brand-700">
-                <i class="fa-solid fa-graduation-cap"></i> SAT Reader
+    <!-- Top Navigation Bar -->
+    <nav class="fixed w-full top-0 z-50 bg-white border-b border-slate-200 shadow-sm h-16 flex items-center">
+        <div class="w-full max-w-5xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2 text-brand-700 cursor-pointer" onclick="location.reload()">
+                <i class="fa-solid fa-graduation-cap text-2xl"></i> 
+                <span>SAT Reader <span class="text-xs text-brand-500 font-semibold bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200">Pro v2.5</span></span>
             </h1>
             <div id="nav-score-container" class="hidden flex items-center gap-3">
                 <div id="combo-badge" class="hidden bg-orange-500 text-white px-2 py-0.5 rounded-md text-xs font-anime transform scale-110">COMBO</div>
@@ -222,12 +147,15 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
+                <button id="nav-line-share-btn" onclick="openLineShareModal()" class="hidden bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1.5 transition">
+                    <i class="fa-brands fa-line text-emerald-600 text-sm"></i> LINE 分享
+                </button>
                 <a href="https://github.com/JamesWCCheng/Smart-Reader-Pro" target="_blank" class="text-slate-400 hover:text-slate-800 transition-colors text-2xl" title="View on GitHub"><i class="fa-brands fa-github"></i></a>
-                <div class="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded">v2.4 Ultimate</div>
             </div>
         </div>
     </nav>
 
+    <!-- Sticky Mountain Progress Bar (during quiz) -->
     <div id="sticky-mountain-bar" class="hidden fixed top-16 left-0 w-full z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-md transition-all duration-300">
         <div class="max-w-4xl mx-auto px-4 py-3">
             <div class="flex justify-between items-end mb-1 px-1">
@@ -243,6 +171,7 @@
         </div>
     </div>
 
+    <!-- Audio Player Bar (during reading) -->
     <div id="audio-player-bar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-white shadow-2xl border border-slate-300 p-2 pr-6 pl-6 rounded-full flex items-center gap-4">
         <div class="relative group">
             <select id="voice-select" class="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold py-2 pl-3 pr-8 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer w-32 truncate" onchange="updateVoice()">
@@ -256,157 +185,439 @@
         <div class="text-sm font-bold text-slate-600" id="btn-read-text">Read</div>
     </div>
 
+    <!-- Main Container -->
     <main class="flex-grow w-full max-w-4xl mx-auto px-4 pt-24 pb-12">
         
+        <!-- Setup / Configuration Panel -->
         <div id="setup-panel" class="clean-card p-6 md:p-10 bg-white">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-slate-800">Configure Lesson</h2>
-                <p class="text-slate-500 text-sm mt-1">Real-world topics & AI-powered learning</p>
+                <div class="inline-flex items-center gap-2 bg-brand-50 text-brand-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                    <i class="fa-solid fa-sparkles"></i> AI-Powered English Tutor
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Configure Lesson</h2>
+                <p class="text-slate-500 text-sm mt-1">選取即時熱門話題、自訂題材或載入挑戰，由 AI 為您客製專屬考卷</p>
             </div>
             
-            <div class="mb-6 p-6 bg-purple-50 border border-purple-200 rounded-xl flex flex-col items-center">
-                <label class="block text-xs font-bold text-purple-600 uppercase mb-3 tracking-widest"><i class="fa-solid fa-folder-open"></i> Load Challenge from File</label>
+            <!-- File Import Box -->
+            <div class="mb-6 p-4 bg-purple-50/60 border border-purple-200/80 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-lg"><i class="fa-solid fa-file-arrow-up"></i></div>
+                    <div>
+                        <div class="text-xs font-bold text-purple-900 uppercase tracking-wide">載入戰友挑戰檔 (Challenge File)</div>
+                        <div class="text-xs text-purple-600">匯入朋友傳來的 .json 考卷檔，直接進行挑戰</div>
+                    </div>
+                </div>
                 <input type="file" id="fileInput" accept=".json" class="hidden" onchange="handleFileUpload(this)">
-                <button onclick="document.getElementById('fileInput').click()" class="bg-white border-2 border-purple-200 text-purple-700 px-6 py-3 rounded-xl font-bold hover:bg-purple-100 transition shadow-sm w-full md:w-auto flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-upload"></i> Select Challenge File (.json)
+                <button onclick="document.getElementById('fileInput').click()" class="bg-white border border-purple-300 text-purple-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-purple-100 transition shadow-sm whitespace-nowrap flex items-center gap-2">
+                    <i class="fa-solid fa-upload"></i> 選擇檔案 (.json)
                 </button>
-                <p class="text-xs text-purple-400 mt-2">Ask your friend to email you the file!</p>
             </div>
 
-            <div id="dice-panel" class="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center relative overflow-hidden neon-glow-box">
-                <h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest">Step 1: Roll for Length</h3>
-                <div class="flex items-center gap-8 z-10">
-                    <div id="dice-btn" onclick="rollDice()" class="relative w-24 h-24 bg-white border-2 border-slate-200 rounded-2xl shadow-xl flex items-center justify-center hover:bg-brand-50 transition-all transform hover:scale-105 active:scale-95 cursor-pointer">
-                        <div class="dice-scene">
-                            <div class="cube" id="cube">
-                                <div class="cube-face face-1">
-                                    <div class="dice-dots"><div class="dot dot-center"></div></div>
-                                    <div class="dice-label text-emerald-600">Short</div>
-                                </div>
-                                <div class="cube-face face-2">
-                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div></div>
-                                    <div class="dice-label text-blue-600">Med</div>
-                                </div>
-                                <div class="cube-face face-3">
-                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div></div>
-                                    <div class="dice-label text-blue-600">Med</div>
-                                </div>
-                                <div class="cube-face face-4">
-                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div></div>
-                                    <div class="dice-label text-blue-600">Med</div>
-                                </div>
-                                <div class="cube-face face-5">
-                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div></div>
-                                    <div class="dice-label text-blue-600">Med</div>
-                                </div>
-                                <div class="cube-face face-6">
-                                    <div class="dice-dots"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div></div>
-                                    <div class="dice-label text-purple-600">Long</div>
-                                </div>
+            <!-- SECTION: 🔥 Top 5 Trending Topics (即時網路連線抓取 Live RSS) -->
+            <div class="mb-6 p-5 bg-gradient-to-br from-slate-50 to-purple-50/30 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3.5 flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                            🔥 今日即時熱門推薦 <span class="text-xs font-normal text-slate-500">(Top 5 Live News Picks)</span>
+                        </h3>
+                        <div id="trending-live-badge" class="flex items-center gap-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span>LIVE 即時連線</span>
+                        </div>
+                    </div>
+                    <button onclick="fetchLiveTrendingTopics(true)" class="text-xs font-bold text-brand-600 hover:text-brand-800 bg-white border border-brand-200 hover:bg-brand-50 px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 shadow-sm active:scale-95">
+                        <i class="fa-solid fa-arrows-rotate" id="refresh-trending-icon"></i> 即時換一批
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">即時連線抓取 ESPN、BBC、CNN、Phys.org 最新英文新聞頭條，點擊直接選取客製考卷：</p>
+                <div id="trending-topics-container" class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                    <!-- Populated dynamically by Live RSS JS -->
+                </div>
+            </div>
+
+            <!-- Configuration Form -->
+            <div class="space-y-5">
+                <!-- API Key -->
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1.5">Google Gemini API Key</label>
+                    <input type="password" id="apiKey" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl focus:border-brand-600 focus:ring-0 text-slate-900 outline-none text-sm transition" placeholder="貼上您的 Gemini API Key (以 AIza 開頭)">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mt-2">
+                        <button onclick="testApiKeyAndListModels()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check"></i> 測試金鑰與探索可用模型
+                        </button>
+                        <a href="https://aistudio.google.com/" target="_blank" class="text-xs text-brand-600 hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-key"></i> 免費取得 Gemini API Key
+                        </a>
+                    </div>
+                    <div id="models-list-output" class="hidden mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-600 max-h-40 overflow-y-auto"></div>
+                </div>
+
+                <!-- Model & Grade Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Model Selection -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1.5">
+                            AI 模型 (Model) <span class="text-xs font-normal text-emerald-600 font-semibold ml-1">★ 建議首選 Flash</span>
+                        </label>
+                        <select id="modelName" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl outline-none focus:border-brand-600 text-sm font-medium text-slate-800 transition">
+                            <option value="gemini-2.5-flash" selected>🏆 Gemini 2.5 Flash (推薦 / 速度與品質最佳平衡) ★</option>
+                            <option value="gemini-2.5-pro">🧠 Gemini 2.5 Pro (深度思考 / SAT 題型難度最高)</option>
+                            <option value="gemini-2.0-flash">⚡ Gemini 2.0 Flash (極速生成 / 低延遲)</option>
+                            <option value="gemini-1.5-flash">🛡️ Gemini 1.5 Flash (經典穩定版)</option>
+                            <option value="gemini-1.5-pro">📚 Gemini 1.5 Pro (經典進階版)</option>
+                        </select>
+                        <div class="mt-2 p-2.5 bg-purple-50 border border-purple-200/80 rounded-lg text-xs text-purple-900 flex items-start gap-2">
+                            <i class="fa-solid fa-lightbulb text-brand-600 mt-0.5 text-sm"></i>
+                            <div>
+                                <span class="font-bold">模型選擇指引：</span> 日常學習首選 <strong>Gemini 2.5 Flash</strong>，速度極快（約 3-5 秒）、繁體中文解析精準且題目結構完整！
                             </div>
                         </div>
                     </div>
-                    <div class="text-left">
-                        <div class="text-xs font-bold text-slate-400 uppercase mb-1">Rolls Left: <span id="roll-count" class="text-brand-600 text-lg">2</span></div>
-                        <div id="dice-result" class="text-3xl font-serif font-bold text-slate-300">Tap Dice</div>
-                        <div class="text-xs text-slate-400 mt-1">Short / Med / Long</div>
+
+                    <!-- Grade Level Selection (Starting from Grade 8+) -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1.5">難度等級 (Grade Level)</label>
+                        <select id="gradeLevel" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl outline-none focus:border-brand-600 text-sm font-medium text-slate-800 transition">
+                            <option value="Grade 8">Grade 8 (Pre-SAT 基礎奠定)</option>
+                            <option value="Grade 9">Grade 9 (Freshman 銜接強化)</option>
+                            <option value="Grade 10">Grade 10 (PSAT Prep 實戰預備)</option>
+                            <option value="Grade 11" selected>Grade 11 (SAT Prime 高中衝刺) ★</option>
+                            <option value="Grade 12">Grade 12 (Advanced 進階挑戰)</option>
+                        </select>
+                        <p class="text-xs text-slate-400 mt-2">提供 Grade 8 以上難度，符合 SAT 與進階英語閱讀水準。</p>
                     </div>
                 </div>
-            </div>
-            
-            <div class="space-y-5">
+
+                <!-- Article Length Selector (Replacing Dice) -->
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Gemini API Key</label>
-                    <input type="password" id="apiKey" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg focus:border-brand-600 focus:ring-0 text-slate-900 outline-none" placeholder="Paste Key Here">
-                    <button onclick="testApiKeyAndListModels()" class="mt-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-2 px-3 rounded-lg border border-slate-300 transition flex items-center gap-1"><i class="fa-solid fa-list-check"></i> Test Key & List Available Models</button>
-                    <div id="models-list-output" class="hidden mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-600 max-h-40 overflow-y-auto"></div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">文章篇幅 (Article Length)</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button type="button" onclick="selectLength('Short')" id="len-btn-Short" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition text-center flex flex-col items-center justify-center gap-0.5 bg-white text-slate-600 border-slate-200 hover:bg-slate-50">
+                            <span>🌱 簡短 (Short)</span>
+                            <span class="text-[11px] font-normal opacity-75">約 250 字</span>
+                        </button>
+                        <button type="button" onclick="selectLength('Medium')" id="len-btn-Medium" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition text-center flex flex-col items-center justify-center gap-0.5 bg-brand-600 text-white border-brand-600 shadow-sm">
+                            <span>📘 標準 (Medium)</span>
+                            <span class="text-[11px] font-normal opacity-90">約 450-500 字</span>
+                        </button>
+                        <button type="button" onclick="selectLength('Long')" id="len-btn-Long" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition text-center flex flex-col items-center justify-center gap-0.5 bg-white text-slate-600 border-slate-200 hover:bg-slate-50">
+                            <span>🚀 長篇 (Long)</span>
+                            <span class="text-[11px] font-normal opacity-75">約 800 字</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Model</label><select id="modelName" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Recommended) ★</option><option value="gemini-3.5-flash">Gemini 3.5 Flash (Newest)</option><option value="gemini-2.5-pro">Gemini 2.5 Pro (Best Intelligence)</option></select></div>
-                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Grade</label><select id="gradeLevel" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="Grade 7">Grade 7 (Foundation)</option><option value="Grade 8">Grade 8 (Pre-SAT)</option><option value="Grade 9">Grade 9 (Freshman)</option><option value="Grade 10">Grade 10 (PSAT Prep)</option><option value="Grade 11">Grade 11 (SAT Prime)</option><option value="Grade 12">Grade 12 (Advanced)</option></select></div>
+
+                <!-- Topic Source Section -->
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <label class="block text-sm font-bold text-slate-700 mb-3">主題來源設定 (Topic Source)</label>
+                    <div class="flex gap-4 mb-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sourceType" value="preset" checked onchange="toggleSourceInput()" class="w-4 h-4 accent-brand-600">
+                            <span class="text-sm font-bold text-slate-700">新聞與學術頻道 (Preset Channels)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sourceType" value="custom" onchange="toggleSourceInput()" class="w-4 h-4 accent-brand-600">
+                            <span class="text-sm font-bold text-slate-700">自訂主題 / 即時選取 (Custom Topic)</span>
+                        </label>
+                    </div>
+                    <div id="input-preset">
+                        <select id="presetSource" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl outline-none focus:border-brand-600 text-sm font-medium text-slate-800 transition">
+                            <option value="CNN Technology">CNN Technology (科技要聞)</option>
+                            <option value="BBC Science">BBC Science (科學新知)</option>
+                            <option value="The Economist">The Economist (全球政經)</option>
+                            <option value="ESPN NBA">ESPN NBA (體育專題)</option>
+                            <option value="NatGeo">National Geographic (自然地理與生態)</option>
+                            <option value="Scientific American">Scientific American (尖端科學探究)</option>
+                            <option value="SAT History">US History & Constitution (SAT 歷史文獻)</option>
+                            <option value="SAT Philosophy">Philosophy & Ethics (SAT 人文哲學)</option>
+                            <option value="SAT Behavioral Science">Behavioral Economics & Sociology (SAT 社會科學)</option>
+                        </select>
+                    </div>
+                    <div id="input-custom" class="hidden">
+                        <input type="text" id="customTopic" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl outline-none focus:border-brand-600 text-sm font-medium text-slate-800 transition" placeholder="輸入任何感興趣的主題，或點選上方今日熱門推薦卡片...">
+                    </div>
                 </div>
-                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                    <label class="block text-sm font-bold text-slate-700 mb-3">Topic Source</label>
-                    <div class="flex gap-4 mb-3"><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="sourceType" value="preset" checked onchange="toggleSourceInput()" class="w-4 h-4 accent-brand-600"><span class="text-sm font-bold text-slate-700">Real News</span></label><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="sourceType" value="custom" onchange="toggleSourceInput()" class="w-4 h-4 accent-brand-600"><span class="text-sm font-bold text-slate-700">Custom</span></label></div>
-                    <div id="input-preset"><select id="presetSource" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600"><option value="CNN Technology">CNN Technology</option><option value="BBC Science">BBC Science</option><option value="The Economist">The Economist</option><option value="ESPN NBA">ESPN NBA</option><option value="NatGeo">National Geographic (Nature)</option><option value="Scientific American">Scientific American (Science)</option><option value="SAT History">US History & Constitution (SAT History)</option><option value="SAT Philosophy">Philosophy & Ethics (SAT Humanities)</option><option value="SAT Behavioral Science">Behavioral Economics & Sociology (SAT Social Science)</option></select></div>
-                    <div id="input-custom" class="hidden"><input type="text" id="customTopic" class="w-full p-3 bg-white border-2 border-slate-300 rounded-lg outline-none focus:border-brand-600" placeholder="e.g. Artificial Intelligence"></div>
+
+                <!-- Generate Action Button -->
+                <button onclick="startApp()" id="generate-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-xl transition transform active:scale-[0.99] flex justify-center items-center gap-2 text-base cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                    <span id="btn-text">🚀 開始生成課程 (標準篇幅 Medium)</span>
+                    <div id="spinner" class="hidden loader border-t-white ml-2"></div>
+                </button>
+                <div id="error-msg" class="hidden mt-3 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-start gap-2">
+                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-base text-red-500"></i>
+                    <span id="error-text"></span>
                 </div>
-                <button onclick="startApp()" id="generate-btn" class="w-full bg-slate-300 text-slate-500 font-bold py-4 rounded-xl cursor-not-allowed flex justify-center items-center gap-2" disabled><span id="btn-text">Please Roll Dice First</span><div id="spinner" class="hidden loader border-t-white"></div></button>
-                <div id="error-msg" class="hidden mt-3 p-3 bg-red-100 text-red-700 rounded-lg text-sm"><span id="error-text"></span></div>
             </div>
         </div>
 
+        <!-- Dashboard Panel (After Generation) -->
         <div id="dashboard" class="hidden">
+            <!-- Tab Navigation -->
             <div class="flex justify-center mb-8">
-                <div class="bg-white p-1 rounded-xl shadow border border-slate-200 flex gap-1">
-                    <button onclick="switchTab('preview')" id="tab-preview" class="px-6 py-2 rounded-lg text-sm font-bold bg-brand-600 text-white shadow-sm">Preview</button>
-                    <button onclick="switchTab('reading')" id="tab-reading" class="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50">Reading</button>
-                    <button onclick="switchTab('quiz')" id="tab-quiz" class="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50">Quiz</button>
+                <div class="bg-white p-1 rounded-2xl shadow-sm border border-slate-200 flex gap-1">
+                    <button onclick="switchTab('preview')" id="tab-preview" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-brand-600 text-white shadow-sm transition">Preview (預習)</button>
+                    <button onclick="switchTab('reading')" id="tab-reading" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 transition">Reading (閱讀)</button>
+                    <button onclick="switchTab('quiz')" id="tab-quiz" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 transition">Quiz (測驗)</button>
                 </div>
             </div>
             
+            <!-- View 1: Preview -->
             <div id="view-preview" class="space-y-6">
-                <div id="vocab-card" class="clean-card p-6 border-l-4 border-brand-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Key Vocabulary</h3><div id="vocab-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
-                <div class="clean-card p-6 border-l-4 border-fuchsia-500"><h3 class="font-bold text-xl mb-4 text-slate-800">Grammar Focus</h3><div class="space-y-4"><div class="p-4 bg-slate-50 rounded-lg border border-slate-200"><p class="text-xs font-bold text-slate-400 uppercase mb-1">English</p><p id="grammar-en" class="text-slate-800"></p></div><div class="p-4 bg-white rounded-lg border border-slate-200"><p class="text-xs font-bold text-slate-400 uppercase mb-1">Chinese</p><p id="grammar-zh" class="text-slate-600"></p></div></div></div>
-                <div class="text-center pt-2"><button onclick="switchTab('reading')" class="bg-brand-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-brand-700">Start Reading</button></div>
+                <!-- Vocabulary Card -->
+                <div id="vocab-card" class="clean-card p-6 md:p-8 border-l-4 border-brand-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-extrabold text-xl text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-brand-600"></i> Key Vocabulary (核心單字)
+                        </h3>
+                        <span class="text-xs bg-brand-50 text-brand-700 font-bold px-2.5 py-1 rounded-full border border-brand-200">點擊單字可發音與複製</span>
+                    </div>
+                    <div id="vocab-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+
+                <!-- Grammar Focus Card -->
+                <div class="clean-card p-6 md:p-8 border-l-4 border-fuchsia-500">
+                    <h3 class="font-extrabold text-xl mb-4 text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open-reader text-fuchsia-600"></i> Grammar Focus (文法核心剖析)
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <p class="text-xs font-bold text-slate-400 uppercase mb-1">English Sentence Pattern</p>
+                            <p id="grammar-en" class="text-slate-800 font-medium leading-relaxed"></p>
+                        </div>
+                        <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-100">
+                            <p class="text-xs font-bold text-purple-600 uppercase mb-1">Traditional Chinese Explanation (繁體中文詳解)</p>
+                            <p id="grammar-zh" class="text-slate-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Actions -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <button onclick="switchTab('reading')" class="w-full sm:w-auto bg-brand-600 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-brand-700 transition flex items-center justify-center gap-2">
+                        <span>進入全文閱讀 (Start Reading)</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button onclick="openLineShareModal()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full font-bold shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-line text-lg"></i> <span>LINE 分享此課堂</span>
+                    </button>
+                </div>
             </div>
             
+            <!-- View 2: Reading -->
             <div id="view-reading" class="hidden relative">
                 <div class="clean-card p-6 md:p-12 relative">
-                    <div class="border-b border-slate-200 pb-4 mb-6"><h2 id="article-title" class="text-3xl md:text-5xl font-anime text-brand-700 mb-3 leading-tight"></h2><div id="source-meta-container" class="flex flex-col md:flex-row md:items-center gap-3"></div></div>
-                    <div id="article-body" class="text-lg leading-9 text-slate-700 font-serif pb-20"></div>
+                    <div class="border-b border-slate-200 pb-4 mb-6">
+                        <h2 id="article-title" class="text-2xl md:text-4xl font-extrabold text-brand-700 mb-3 leading-tight font-serif"></h2>
+                        <div id="source-meta-container" class="flex flex-col md:flex-row md:items-center gap-3"></div>
+                    </div>
+                    <div id="article-body" class="text-lg leading-9 text-slate-800 font-serif pb-20"></div>
                 </div>
-                <div class="text-center mt-8 pb-20"><button onclick="switchTab('quiz')" class="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-emerald-700">Start Quiz</button></div>
+                <div class="text-center mt-8 pb-20">
+                    <button onclick="switchTab('quiz')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-3.5 rounded-full font-bold shadow-lg hover:shadow-xl transition transform active:scale-95 text-base flex items-center gap-2 mx-auto">
+                        <i class="fa-solid fa-circle-question"></i> <span>開始挑戰測驗 (Start Quiz)</span>
+                    </button>
+                </div>
             </div>
             
+            <!-- View 3: Quiz -->
             <div id="view-quiz" class="hidden pb-24 mt-24">
                 <div id="quiz-container" class="space-y-8"></div>
+                
+                <!-- Quiz Summary Screen (Shown after completion) -->
                 <div id="quiz-summary" class="hidden text-center clean-card p-8 mt-12 border-t-8 border-yellow-400 bg-white">
-                    <div class="mb-4"><div class="text-5xl text-yellow-500 mb-2 drop-shadow-md"><i class="fa-solid fa-crown"></i></div><h3 class="text-2xl font-bold text-slate-800 uppercase tracking-wide">Quiz Complete!</h3></div>
+                    <div class="mb-4">
+                        <div class="text-5xl text-yellow-500 mb-2 drop-shadow-md"><i class="fa-solid fa-crown"></i></div>
+                        <h3 class="text-2xl font-bold text-slate-800 uppercase tracking-wide">Quiz Complete!</h3>
+                    </div>
                     
-                    <div id="summary-article-info" class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl text-left">
+                    <div id="summary-article-info" class="mb-6 p-5 bg-blue-50/70 border border-blue-100 rounded-2xl text-left">
                         <h4 class="font-bold text-lg text-brand-700 mb-1" id="summary-title"></h4>
-                        <div class="inline-block bg-white text-xs font-bold px-2 py-1 rounded border border-blue-200 text-slate-500 mb-3 cursor-pointer hover:bg-blue-100 hover:text-blue-600 transition active:scale-95" id="summary-difficulty" title="Click to Copy Difficulty" onclick="copyDifficulty()"></div>
-                        <div class="text-sm font-bold text-slate-500 uppercase mb-2">✨ Key Takeaways</div>
-                        <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700" id="summary-takeaways"></ul>
+                        <div class="inline-block bg-white text-xs font-bold px-2.5 py-1 rounded-md border border-blue-200 text-slate-600 mb-3 cursor-pointer hover:bg-blue-100 hover:text-blue-700 transition active:scale-95" id="summary-difficulty" title="點擊複製難度" onclick="copyDifficulty()"></div>
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">✨ Key Takeaways (文章精華要點)</div>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-700" id="summary-takeaways"></ul>
                     </div>
 
-                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-6 max-w-sm mx-auto"><div class="text-sm text-slate-400 font-bold uppercase mb-1">Total Score</div><div class="text-5xl font-black text-brand-600 mb-2"><span id="final-score">0</span><span class="text-xl text-slate-400">/100</span></div><div id="final-rank" class="rank-badge text-2xl text-orange-500">Unranked</div></div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6 max-w-sm mx-auto">
+                        <div class="text-xs text-slate-400 font-bold uppercase mb-1 tracking-wider">Total Score</div>
+                        <div class="text-5xl font-black text-brand-600 mb-2"><span id="final-score">0</span><span class="text-xl text-slate-400">/100</span></div>
+                        <div id="final-rank" class="rank-badge text-2xl text-orange-500">Unranked</div>
+                    </div>
                     
+                    <!-- Action Grid (Including prominent LINE 3-Message Share button) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button onclick="sendEmail()" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-sky-600 transition shadow-lg transform active:scale-95"><i class="fa-solid fa-envelope"></i> Share via Email</button>
-                        <button onclick="shareVocabImage()" class="bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition shadow-lg transform active:scale-95"><i class="fa-solid fa-font"></i> Share Vocab</button>
-                        <button onclick="shareArticleImage()" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 transition shadow-lg transform active:scale-95"><i class="fa-solid fa-image"></i> Share Article</button>
-                        <button onclick="shareScore()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition shadow-lg transform active:scale-95"><i class="fa-solid fa-camera"></i> Snapshot Score</button>
-                        <button onclick="resetAndReload()" class="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 col-span-1 md:col-span-2"><i class="fa-solid fa-house"></i> New Topic</button>
+                        <!-- LINE Share Button (Full-width Highlight) -->
+                        <button onclick="openLineShareModal()" class="bg-[#06C755] hover:bg-[#05b34c] text-white px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2.5 transition shadow-lg hover:shadow-xl transform active:scale-95 col-span-1 md:col-span-2 text-base">
+                            <i class="fa-brands fa-line text-2xl"></i>
+                            <span>傳送 LINE 3 則專屬訊息 (含分數、文章、文法與單字)</span>
+                        </button>
+                        
+                        <button onclick="sendEmail()" class="bg-sky-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-sky-600 transition shadow-md transform active:scale-95">
+                            <i class="fa-solid fa-envelope"></i> Share via Email
+                        </button>
+                        <button onclick="shareVocabImage()" class="bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition shadow-md transform active:scale-95">
+                            <i class="fa-solid fa-font"></i> Snapshot Vocab
+                        </button>
+                        <button onclick="shareArticleImage()" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 transition shadow-md transform active:scale-95">
+                            <i class="fa-solid fa-image"></i> Snapshot Article
+                        </button>
+                        <button onclick="shareScore()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition shadow-md transform active:scale-95">
+                            <i class="fa-solid fa-camera"></i> Snapshot Score
+                        </button>
+                        <button onclick="resetAndReload()" class="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 col-span-1 md:col-span-2">
+                            <i class="fa-solid fa-house"></i> 換個新主題 (New Topic)
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- MODAL: LINE 3 則專屬訊息傳送器 (LINE 3-Message Sender Modal) -->
+    <div id="line-share-modal" class="hidden modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+            <!-- Modal Header -->
+            <div class="p-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-brands fa-line text-3xl"></i>
+                    <div>
+                        <h3 class="font-extrabold text-lg leading-tight">LINE 3 則專屬訊息傳送器</h3>
+                        <p class="text-xs text-emerald-100">將測驗成績、閱讀文章、文法解析與單字卡分 3 則訊息發送給好友</p>
+                    </div>
+                </div>
+                <button onclick="closeLineShareModal()" class="text-emerald-100 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Modal Tabs (Share via LINE App / Direct Push API) -->
+            <div class="px-5 pt-3 border-b border-slate-200 bg-slate-50 flex gap-2">
+                <button onclick="switchLineModalTab('intent')" id="line-tab-intent" class="px-4 py-2 text-xs font-bold rounded-t-lg bg-white text-emerald-700 border-t-2 border-emerald-600 border-x border-slate-200">
+                    <i class="fa-solid fa-paper-plane mr-1"></i> 📱 LINE App 一鍵轉傳 / 複製
+                </button>
+                <button onclick="switchLineModalTab('bot')" id="line-tab-bot" class="px-4 py-2 text-xs font-bold rounded-t-lg text-slate-500 hover:text-slate-800">
+                    <i class="fa-solid fa-robot mr-1"></i> 🤖 LINE Messaging API 直傳模式
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 overflow-y-auto message-preview-scroll flex-grow space-y-4">
+                
+                <!-- TAB 1: LINE App Share & Copy -->
+                <div id="line-view-intent" class="space-y-4">
+                    <!-- Bulk copy banner -->
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-3">
+                        <div class="text-xs text-emerald-800 font-medium">
+                            <i class="fa-solid fa-circle-info text-emerald-600 mr-1"></i> 點擊下方綠色按鈕可依序喚起 LINE 發送給指定對象，或直接複製訊息！
+                        </div>
+                        <button onclick="copyAllLineMessages()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm whitespace-nowrap flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> 複製全部三則
+                        </button>
+                    </div>
+
+                    <!-- Message 1: Score & Article -->
+                    <div class="clean-card p-4 border border-slate-200 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-extrabold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md border border-brand-200">
+                                📊 第 1 則訊息：測驗成績與閱讀文章 (Score & Article)
+                            </span>
+                            <div class="flex gap-1.5">
+                                <button onclick="sendLineMessage(1)" class="bg-[#06C755] hover:bg-[#05b34c] text-white text-xs font-bold px-3 py-1 rounded-lg transition shadow-sm flex items-center gap-1">
+                                    <i class="fa-brands fa-line"></i> 傳送第 1 則
+                                </button>
+                                <button onclick="copyLineMessage(1)" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold px-2.5 py-1 rounded-lg transition">
+                                    <i class="fa-solid fa-copy"></i> 複製
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="line-preview-msg-1" class="text-xs font-mono bg-white p-3 rounded-lg border border-slate-200 text-slate-700 max-h-36 overflow-y-auto whitespace-pre-wrap message-preview-scroll"></pre>
+                    </div>
+
+                    <!-- Message 2: Grammar Focus -->
+                    <div class="clean-card p-4 border border-slate-200 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-extrabold text-fuchsia-700 bg-fuchsia-50 px-2.5 py-1 rounded-md border border-fuchsia-200">
+                                🔍 第 2 則訊息：文法核心解析 (Grammar Focus)
+                            </span>
+                            <div class="flex gap-1.5">
+                                <button onclick="sendLineMessage(2)" class="bg-[#06C755] hover:bg-[#05b34c] text-white text-xs font-bold px-3 py-1 rounded-lg transition shadow-sm flex items-center gap-1">
+                                    <i class="fa-brands fa-line"></i> 傳送第 2 則
+                                </button>
+                                <button onclick="copyLineMessage(2)" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold px-2.5 py-1 rounded-lg transition">
+                                    <i class="fa-solid fa-copy"></i> 複製
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="line-preview-msg-2" class="text-xs font-mono bg-white p-3 rounded-lg border border-slate-200 text-slate-700 max-h-36 overflow-y-auto whitespace-pre-wrap message-preview-scroll"></pre>
+                    </div>
+
+                    <!-- Message 3: Vocabulary Cards -->
+                    <div class="clean-card p-4 border border-slate-200 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
+                                🗂️ 第 3 則訊息：核心單字記憶卡 (Vocabulary Cards)
+                            </span>
+                            <div class="flex gap-1.5">
+                                <button onclick="sendLineMessage(3)" class="bg-[#06C755] hover:bg-[#05b34c] text-white text-xs font-bold px-3 py-1 rounded-lg transition shadow-sm flex items-center gap-1">
+                                    <i class="fa-brands fa-line"></i> 傳送第 3 則
+                                </button>
+                                <button onclick="copyLineMessage(3)" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold px-2.5 py-1 rounded-lg transition">
+                                    <i class="fa-solid fa-copy"></i> 複製
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="line-preview-msg-3" class="text-xs font-mono bg-white p-3 rounded-lg border border-slate-200 text-slate-700 max-h-36 overflow-y-auto whitespace-pre-wrap message-preview-scroll"></pre>
+                    </div>
+                </div>
+
+                <!-- TAB 2: LINE Bot Direct Push API -->
+                <div id="line-view-bot" class="hidden space-y-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">LINE Messaging API 推播設定</h4>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">LINE Channel Access Token (長效憑證)</label>
+                            <input type="password" id="line-channel-token" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs font-mono outline-none focus:border-emerald-600" placeholder="貼上 LINE Bot Channel Access Token">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Target User ID (特定接收者 LINE User ID)</label>
+                            <input type="text" id="line-target-uid" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs font-mono outline-none focus:border-emerald-600" placeholder="例如：U1234567890abcdef1234567890abcdef">
+                        </div>
+                        <p class="text-[11px] text-slate-400">設定將安全儲存於瀏覽器 localStorage 中，點擊後會自動向該特定用戶發送 3 則完整訊息。</p>
+                    </div>
+                    <button onclick="sendLinePushApi()" id="btn-line-push" class="w-full bg-[#06C755] hover:bg-[#05b34c] text-white py-3 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> <span>🚀 自動推送 3 則訊息給指定 LINE 好友</span>
+                    </button>
+                    <div id="line-push-status" class="hidden p-3 rounded-lg text-xs font-mono"></div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="closeLineShareModal()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-lg transition">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
     <script>
         // ==========================================
-        // GLOBAL ERROR HANDLER — catches unhandled errors
+        // GLOBAL ERROR HANDLER
         // ==========================================
         let _lastError = null;
-        let _lastAction = null; // tracks what we were doing when error hit
+        let _lastAction = null;
         window.onerror = function(msg, src, line, col, err) {
             console.error('[Global Error]', msg, src, line, col, err);
             _lastError = { msg, src, line, col, err };
-            // Only show modal for critical runtime errors, not for CDN loading issues (those are handled separately)
             if (src && !src.includes('cdn') && !src.includes('unpkg')) {
                 showErrorModal(`Runtime Error: ${msg}`, 'An unexpected error occurred. You can retry or reload the page.');
             }
-            return true; // Prevent default browser error handling
+            return true;
         };
         window.addEventListener('unhandledrejection', function(e) {
             console.error('[Unhandled Promise Rejection]', e.reason);
-            // Don't show modal for network errors during fetch — those are handled by callGemini
         });
 
         function showErrorModal(title, message) {
-            // Remove existing modal if any
             const existing = document.getElementById('global-error-overlay');
             if (existing) existing.remove();
             const overlay = document.createElement('div');
@@ -435,7 +646,7 @@
         }
 
         // ==========================================
-        // SAFE WRAPPERS — prevent crashes when CDN libs are missing
+        // SAFE WRAPPERS
         // ==========================================
         function safeConfetti(opts) {
             try {
@@ -444,29 +655,260 @@
         }
         async function safeHtml2Canvas(element, opts) {
             if (typeof html2canvas !== 'function') {
-                showToast('⚠️ Screenshot library not loaded. Please reload.');
+                showToast('⚠️ 截圖程式庫尚未載入完成，請稍候重試');
                 return null;
             }
             try {
                 return await html2canvas(element, opts);
             } catch (e) {
                 console.warn('[safeHtml2Canvas] failed:', e.message);
-                showToast('⚠️ Screenshot failed');
+                showToast('⚠️ 截圖失敗');
                 return null;
             }
         }
 
         // ==========================================
-        // CORE STATE
+        // REAL-TIME LIVE WEB RSS FETCHING ENGINE (今日即時熱門新聞抓取)
         // ==========================================
-        // Kill Audio on Unload
+        const LIVE_RSS_FEEDS = {
+            '體育焦點': { 
+                name: 'ESPN NBA', 
+                icon: 'fa-basketball', 
+                color: 'orange', 
+                url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.espn.com/espn/rss/nba/news' 
+            },
+            '尖端科學': { 
+                name: 'BBC Science', 
+                icon: 'fa-dna', 
+                color: 'emerald', 
+                url: 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.bbci.co.uk/news/science_and_environment/rss.xml' 
+            },
+            '國際要聞': { 
+                name: 'BBC World', 
+                icon: 'fa-earth-americas', 
+                color: 'blue', 
+                url: 'https://api.rss2json.com/v1/api.json?rss_url=http://feeds.bbci.co.uk/news/world/rss.xml' 
+            },
+            'AI 科技': { 
+                name: 'CNN Tech', 
+                icon: 'fa-robot', 
+                color: 'purple', 
+                url: 'https://api.rss2json.com/v1/api.json?rss_url=http://rss.cnn.com/rss/edition_technology.rss' 
+            },
+            '環境生態': { 
+                name: 'Phys.org Earth', 
+                icon: 'fa-leaf', 
+                color: 'teal', 
+                url: 'https://api.rss2json.com/v1/api.json?rss_url=https://phys.org/rss-feed/earth-news/' 
+            }
+        };
+
+        // Fallback curated topics in case network/CORS fails for a specific feed
+        const TRENDING_TOPICS_POOL = [
+            { cat: '體育焦點', icon: 'fa-basketball', color: 'orange', title: 'The Evolution of Three-Point Shooting and Sports Analytics in Modern Basketball', desc: '現代籃球三分球革命與運動數據分析的演進' },
+            { cat: '體育焦點', icon: 'fa-person-running', color: 'orange', title: 'Biomechanical Innovations and Human Endurance Limits in Marathon Running', desc: '馬拉松極限耐力與生物力學創新突破' },
+            { cat: '尖端科學', icon: 'fa-dna', color: 'emerald', title: 'CRISPR-Cas9 Gene-Editing Breakthroughs and the Future of Personalized Medicine', desc: 'CRISPR 基因編輯突破與精準個人化醫療未來' },
+            { cat: '尖端科學', icon: 'fa-atom', color: 'emerald', title: 'Nuclear Fusion Energy Milestones and the Quest for Sustainable Power', desc: '可控核融合發電里程碑與潔淨能源聖杯' },
+            { cat: '國際要聞', icon: 'fa-earth-americas', color: 'blue', title: 'Global Semiconductor Supply Chains and Geopolitical Economic Security', desc: '全球半導體供應鏈與地緣政治經濟安全' },
+            { cat: '國際要聞', icon: 'fa-chart-line', color: 'blue', title: 'Central Bank Digital Currencies and the Future of International Trade Settlement', desc: '各國央行數位貨幣 (CBDC) 與國際貿易結算變革' },
+            { cat: 'AI 科技', icon: 'fa-robot', color: 'purple', title: 'Autonomous Multi-Agent AI Systems and the Transformation of Global Knowledge Work', desc: '自主多智能體 AI 系統與全球知識勞動轉型' },
+            { cat: 'AI 科技', icon: 'fa-brain', color: 'purple', title: 'Neural Interfaces and the Ethics of Human-Machine Cognitive Collaboration', desc: '腦機介面技術與人機認知協作倫理' },
+            { cat: '環境生態', icon: 'fa-leaf', color: 'teal', title: 'Deep-Sea Hydrothermal Ecosystems and Extremophile Adaptation Mechanisms', desc: '深海熱泉極端環境與極限微生物適應演化' },
+            { cat: '環境生態', icon: 'fa-cloud-sun-rain', color: 'teal', title: 'Ocean Acidification and Coral Reef Resilience in Warming Marine Systems', desc: '海洋酸化危機與珊瑚礁生態系韌性機制' }
+        ];
+
+        let liveNewsCache = {}; // { '體育焦點': [items...], ... }
+        let liveNewsIndex = { '體育焦點': 0, '尖端科學': 0, '國際要聞': 0, 'AI 科技': 0, '環境生態': 0 };
+        let currentTrendingOffset = 0;
+        let isFetchingLiveTrending = false;
+        let selectedTrendingTopic = null;
+        let selectedTrendingSourceUrl = "";
+        let selectedTrendingDesc = "";
+
+        async function fetchLiveTrendingTopics(isRefresh = false) {
+            if (isFetchingLiveTrending) return;
+            isFetchingLiveTrending = true;
+            
+            const badgeEl = document.getElementById('trending-live-badge');
+            const iconEl = document.getElementById('refresh-trending-icon');
+            if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-brand-600"></i> <span class="text-slate-600 font-bold">連線即時抓取中...</span>`;
+            if (iconEl) iconEl.classList.add('fa-spin');
+            
+            const categories = Object.keys(LIVE_RSS_FEEDS);
+            
+            // If already have cached live data and user just wants next batch, cycle indices first
+            if (isRefresh && Object.keys(liveNewsCache).length > 0) {
+                currentTrendingOffset++;
+                categories.forEach(cat => {
+                    if (liveNewsCache[cat] && liveNewsCache[cat].length > 0) {
+                        liveNewsIndex[cat] = (liveNewsIndex[cat] + 1) % liveNewsCache[cat].length;
+                    }
+                });
+                renderTrendingTopics();
+            }
+
+            // Fetch live feeds in parallel with 4.5s timeout
+            const fetchPromises = categories.map(async (cat) => {
+                const config = LIVE_RSS_FEEDS[cat];
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 4500);
+                    const res = await fetch(config.url, { signal: controller.signal });
+                    clearTimeout(timeout);
+                    const data = await res.json();
+                    if (data.items && data.items.length > 0) {
+                        const cleanItems = data.items.map(item => {
+                            const rawDesc = item.description || item.content || '';
+                            const cleanDesc = rawDesc.replace(/<[^>]*>?/gm, '').replace(/&[a-z]+;/gi, ' ').trim().substring(0, 120);
+                            return {
+                                title: item.title.trim(),
+                                desc: cleanDesc ? cleanDesc + '...' : `來自 ${config.name} 最新報導`,
+                                link: item.link,
+                                pubDate: item.pubDate,
+                                sourceName: config.name,
+                                isLive: true
+                            };
+                        });
+                        liveNewsCache[cat] = cleanItems;
+                    }
+                } catch(err) {
+                    console.warn(`[Live RSS] Failed for ${cat}:`, err.message);
+                }
+            });
+
+            await Promise.allSettled(fetchPromises);
+            
+            isFetchingLiveTrending = false;
+            if (iconEl) iconEl.classList.remove('fa-spin');
+            if (badgeEl) badgeEl.innerHTML = `<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span> <span class="text-emerald-700 font-bold">LIVE 即時連線</span>`;
+            
+            renderTrendingTopics();
+            if (isRefresh) showToast("🟢 已更新最新即時新聞頭條！");
+        }
+
+        function renderTrendingTopics() {
+            const container = document.getElementById('trending-topics-container');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const categories = ['體育焦點', '尖端科學', '國際要聞', 'AI 科技', '環境生態'];
+            const displayList = [];
+            
+            categories.forEach(cat => {
+                const config = LIVE_RSS_FEEDS[cat];
+                const liveItems = liveNewsCache[cat];
+                const idx = liveNewsIndex[cat] || 0;
+                
+                if (liveItems && liveItems.length > 0) {
+                    const item = liveItems[idx % liveItems.length];
+                    displayList.push({
+                        cat: cat,
+                        icon: config.icon,
+                        color: config.color,
+                        sourceName: item.sourceName || config.name,
+                        title: item.title,
+                        desc: item.desc,
+                        link: item.link,
+                        isLive: true
+                    });
+                } else {
+                    // Fallback to curated topic if live feed is still loading or failed
+                    const poolMatches = TRENDING_TOPICS_POOL.filter(t => t.cat === cat);
+                    const fallbackItem = poolMatches[currentTrendingOffset % poolMatches.length] || poolMatches[0];
+                    displayList.push({
+                        cat: cat,
+                        icon: fallbackItem.icon,
+                        color: fallbackItem.color,
+                        sourceName: '精選主題',
+                        title: fallbackItem.title,
+                        desc: fallbackItem.desc,
+                        link: '',
+                        isLive: false
+                    });
+                }
+            });
+
+            displayList.forEach((item) => {
+                const isSelected = (selectedTrendingTopic === item.title);
+                const card = document.createElement('div');
+                card.className = `trending-card clean-card p-3.5 rounded-xl border cursor-pointer transition-all ${isSelected ? 'active-topic' : 'border-slate-200 hover:border-brand-400 bg-white hover:shadow-sm'}`;
+                card.onclick = () => selectTrendingTopic(item.title, item.link, item.desc);
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="w-5 h-5 rounded-md bg-${item.color}-100 text-${item.color}-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid ${item.icon}"></i>
+                            </span>
+                            <span class="text-[11px] font-bold text-${item.color}-700 bg-${item.color}-50 px-1.5 py-0.5 rounded border border-${item.color}-200/60">${item.cat}</span>
+                            <span class="text-[10px] ${item.isLive ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-500 bg-slate-100 border-slate-200'} font-semibold px-1.5 py-0.5 rounded border flex items-center gap-1">
+                                ${item.isLive ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span> ' + item.sourceName : item.sourceName}
+                            </span>
+                        </div>
+                        ${isSelected ? '<span class="text-xs font-bold text-brand-600 flex items-center gap-1 shrink-0"><i class="fa-solid fa-circle-check"></i> 已選取</span>' : '<span class="text-[10px] text-slate-400 font-semibold group-hover:text-brand-600 shrink-0">點擊選取</span>'}
+                    </div>
+                    <div class="font-bold text-xs text-slate-800 mt-2 line-clamp-1 leading-snug">${item.title}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5 line-clamp-1">${item.desc}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectTrendingTopic(title, link = '', desc = '') {
+            selectedTrendingTopic = title;
+            selectedTrendingSourceUrl = link;
+            selectedTrendingDesc = desc;
+            
+            const customRadio = document.querySelector('input[name="sourceType"][value="custom"]');
+            if (customRadio) customRadio.checked = true;
+            toggleSourceInput();
+            
+            const customInput = document.getElementById('customTopic');
+            if (customInput) customInput.value = title;
+            renderTrendingTopics();
+            showToast(`🔥 已選取即時頭條: ${title.substring(0, 30)}...`);
+            
+            const genBtn = document.getElementById('generate-btn');
+            if (genBtn && window.innerWidth < 768) {
+                genBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // ==========================================
+        // LENGTH SELECTOR
+        // ==========================================
+        let selectedLength = "Medium";
+
+        function selectLength(len) {
+            selectedLength = len;
+            ['Short', 'Medium', 'Long'].forEach(l => {
+                const btn = document.getElementById(`len-btn-${l}`);
+                if (btn) {
+                    if (l === len) {
+                        btn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition text-center flex flex-col items-center justify-center gap-0.5 bg-brand-600 text-white border-brand-600 shadow-sm";
+                    } else {
+                        btn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition text-center flex flex-col items-center justify-center gap-0.5 bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    }
+                }
+            });
+            const lengthLabels = { 'Short': '簡短篇幅 Short', 'Medium': '標準篇幅 Medium', 'Long': '長篇進階 Long' };
+            const btnText = document.getElementById('btn-text');
+            if (btnText) btnText.innerText = `🚀 開始生成課程 (${lengthLabels[len] || len})`;
+        }
+
+        // ==========================================
+        // CORE STATE & INITIALIZATION
+        // ==========================================
         window.addEventListener('beforeunload', () => { window.speechSynthesis.cancel(); });
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Initial render then live fetch
+            renderTrendingTopics();
+            fetchLiveTrendingTopics();
+            selectLength('Medium');
+
             const savedKey = localStorage.getItem('gemini_api_key');
             if(savedKey) {
                 document.getElementById('apiKey').value = savedKey;
-                // Auto-discover available models on page load
                 discoverModels(savedKey).then(models => {
                     if (models && models.length > 0) {
                         updateModelDropdown(models);
@@ -474,6 +916,11 @@
                     }
                 }).catch(e => console.warn('Auto model discovery failed:', e.message));
             }
+
+            const savedLineToken = localStorage.getItem('line_channel_token');
+            const savedLineUid = localStorage.getItem('line_target_uid');
+            if (savedLineToken) document.getElementById('line-channel-token').value = savedLineToken;
+            if (savedLineUid) document.getElementById('line-target-uid').value = savedLineUid;
         });
 
         let courseData = {};
@@ -482,19 +929,16 @@
         let comboStreak = 0;
         let climberStep = 0;
         let synth = window.speechSynthesis;
-        let readingUtterance = null;
-        let diceRolls = 0;
-        const maxRolls = 2;
-        let selectedLength = "";
         let isReading = false;
         let currentWordIndex = 0;
         let wordSpansCache = [];
         let voices = [];
-        let currentSelectionText = ''; // FIX: was used but never declared
+        let currentSelectionText = '';
 
         function loadVoices() {
             voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
             const select = document.getElementById('voice-select');
+            if (!select) return;
             select.innerHTML = '';
             voices.forEach((v, i) => {
                 const opt = document.createElement('option');
@@ -514,23 +958,21 @@
             'The Economist': 'https://api.rss2json.com/v1/api.json?rss_url=https://www.economist.com/feeds/print-sections/79/finance-and-economics.xml',
             'Scientific American': 'https://api.rss2json.com/v1/api.json?rss_url=https://www.scientificamerican.com/feed/'
         };
-        const NATGEO_TOPICS = ["Deep-sea creatures", "Arctic survival", "Rainforest ecosystems", "Volcanic activity", "Animal migration"];
+        const NATGEO_TOPICS = ["Deep-sea creatures and hydrothermal adaptations", "Arctic survival mechanisms in extreme climates", "Rainforest ecosystems and biodiversity loss", "Volcanic activity and geothermal energy", "Animal migration patterns in changing climate"];
         const ACADEMIC_TOPICS = {
             'SAT History': ["U.S. Declaration of Independence and constitutional debates", "The Federalist Papers and republican government", "Women's suffrage movement in the 19th century", "The Civil Rights Act of 1964 and its societal impacts", "Lincoln's Second Inaugural Address and Reconstruction"],
             'SAT Philosophy': ["Ethics of artificial intelligence and machine consciousness", "Stoicism and mental resilience in modern times", "John Locke's social contract theory vs. Thomas Hobbes", "Utilitarianism vs. Deontology in policy decisions", "Socrates' dialectic method and the pursuit of truth"],
             'SAT Behavioral Science': ["Cognitive bias and irrational economic decisions", "Social networks and peer influence in group behavior", "Nudge theory and public health policy interventions", "Loss aversion and investor decision making", "The impact of remote work on social capital and team dynamics"]
         };
 
-        // RSS Fallback topics — used when rss2json.com is down or rate-limited
         const RSS_FALLBACK_TOPICS = {
-            'CNN Technology': ["How AI is transforming modern healthcare diagnostics", "The future of quantum computing and its real-world applications", "Cybersecurity threats in the age of smart devices", "How 5G networks are changing the digital landscape", "The rise of electric vehicles and sustainable technology"],
-            'BBC Science': ["New discoveries about Mars hint at ancient water systems", "How CRISPR gene editing could cure genetic diseases", "The science behind climate change and extreme weather", "Breakthrough in nuclear fusion energy research", "Exploring the deep ocean: new species discovered"],
-            'ESPN NBA': ["The evolution of three-point shooting in modern basketball", "How analytics changed NBA team strategies", "The greatest rivalries in NBA playoff history", "How the NBA draft lottery shapes franchise futures", "The impact of international players on the NBA"],
-            'The Economist': ["How central banks navigate inflation and recession risks", "The global semiconductor supply chain crisis explained", "Digital currencies and the future of banking", "Trade tensions and their impact on global markets", "The economics of renewable energy transition"],
-            'Scientific American': ["The neuroscience of memory formation and recall", "How microplastics are affecting ocean ecosystems", "The physics of black holes and gravitational waves", "Advances in renewable energy storage technology", "The human microbiome and its role in health"]
+            'CNN Technology': ["How AI agents are transforming modern enterprise software", "The future of quantum computing and cryptographic security", "Cybersecurity threats in the age of connected IoT devices", "How 5G and satellite networks are bridging the digital divide", "The rise of solid-state batteries in electric vehicles"],
+            'BBC Science': ["New discoveries on Mars hint at ancient habitable water systems", "How CRISPR gene therapy is curing previously untreatable genetic diseases", "The thermodynamic science behind extreme climate weather events", "Breakthroughs in magnetic confinement nuclear fusion energy", "Exploring the deep ocean: uncatalogued species in the twilight zone"],
+            'ESPN NBA': ["The evolution of spatial analytics and three-point efficiency in modern basketball", "How load management and sports science revolutionized athlete recovery", "The tactical rise of positionless basketball in championship contenders", "How salary cap economics shape long-term NBA franchise strategies", "The global expansion of international basketball talent"],
+            'The Economist': ["How central banks navigate structural inflation and interest rate policy", "The geopolitical realignment of global semiconductor manufacturing", "Central bank digital currencies vs. decentralized crypto assets", "Trade tariffs and their systemic impact on global supply networks", "The capital economics of the green energy transition"],
+            'Scientific American': ["The neural mechanisms of episodic memory consolidation and recall", "How microplastics and nanoplastics penetrate biological cellular barriers", "The astrophysics of supermassive black hole event horizons", "Next-generation solid electrolyte batteries for grid storage", "The human gut microbiome and its bidirectional gut-brain axis"]
         };
 
-        // Lazy AudioContext — only create on first user interaction
         let audioCtx = null;
         function getAudioContext() {
             if (!audioCtx) {
@@ -567,13 +1009,11 @@
             return "NEEDS PRACTICE 📝";
         }
 
-        // --- NEW: UNIFIED SCROLL RESTORATION WRAPPER FOR SNAPSHOTS ---
-        async function runSnapshot(targetId, filename="Snapshot") {
-            const currentY = window.scrollY; // Save Position
-            const target = document.getElementById(targetId);
-            
-            // Logic to handle visibility toggling if needed
-            let originalDisplay = null;
+        // ==========================================
+        // SNAPSHOT & EXPORT HANDLERS
+        // ==========================================
+        async function runSnapshot(targetId) {
+            const currentY = window.scrollY;
             let otherView = null;
             
             if (targetId === 'view-reading' || targetId === 'vocab-card') {
@@ -593,35 +1033,30 @@
             }
 
             try {
-                // Ensure target is an element object, if passed ID string, query it
                 const element = (targetId === 'vocab-card') ? document.getElementById('vocab-card') : 
                                 (targetId === 'view-reading') ? document.querySelector('#view-reading .clean-card') : 
                                 document.getElementById(targetId);
 
                 const canvas = await safeHtml2Canvas(element, { scale: 2, backgroundColor: "#ffffff" });
-                if (!canvas) return; // safeHtml2Canvas already showed toast
+                if (!canvas) return;
                 canvas.toBlob(blob => {
                     const item = new ClipboardItem({ "image/png": blob });
-                    navigator.clipboard.write([item]).then(() => showToast("📸 Image Copied!"));
+                    navigator.clipboard.write([item]).then(() => showToast("📸 圖片已複製到剪貼簿！"));
                 });
-            } catch (err) { alert("Snapshot failed"); }
+            } catch (err) { alert("截圖失敗: " + err.message); }
             finally {
-                // Restore Views
                 if (otherView) {
                     otherView.classList.add('hidden');
                     document.getElementById('view-quiz').classList.remove('hidden');
                 }
-                // Restore Scroll
                 window.scrollTo(0, currentY);
             }
         }
 
-        // Wrapper Functions
         function shareScore() { runSnapshot('quiz-summary'); }
         function shareArticleImage() { runSnapshot('view-reading'); }
         function shareVocabImage() { runSnapshot('vocab-card'); }
 
-        // --- FILE SHARE & EMAIL ---
         function downloadChallenge() {
             try {
                 const jsonStr = JSON.stringify(courseData, null, 2);
@@ -634,15 +1069,15 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-            } catch(e) { alert("Download failed"); }
+            } catch(e) { alert("下載失敗"); }
         }
         
         function sendEmail() {
             downloadChallenge();
-            const subject = "SAT Challenge!";
-            const body = "I've attached a challenge file for you. Please download it and load it into the SAT Reader app to start the quiz!";
+            const subject = "SAT Smart Reader 挑戰考卷！";
+            const body = "哈囉！這是一份我為你準備的 SAT 智慧閱讀挑戰考卷。請下載附加的 .json 檔案並載入 SAT Reader 網頁中開始測驗！";
             window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            setTimeout(() => alert("📎 Please drag the downloaded file into your email draft!"), 1000);
+            setTimeout(() => alert("📎 請將剛才下載的 .json 挑戰檔附加至郵件中寄出！"), 1000);
         }
 
         function handleFileUpload(input) {
@@ -652,142 +1087,33 @@
             reader.onload = (e) => {
                 try {
                     courseData = JSON.parse(e.target.result);
-                    if(!courseData.vocabulary || !courseData.quiz) throw new Error("Invalid file format");
+                    if(!courseData.vocabulary || !courseData.quiz) throw new Error("無效的考卷檔案格式");
                     userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
                     document.getElementById('nav-current-score').innerText = 0;
                     document.getElementById('quiz-summary').classList.add('hidden');
                     if(!localStorage.getItem('gemini_api_key')) document.getElementById('apiKey').value = "shared_mode";
                     initUI();
-                    showToast("⚔️ Challenge Loaded!");
-                } catch(err) { alert("Error loading file: " + err.message); }
+                    showToast("⚔️ 挑戰考卷已成功載入！");
+                } catch(err) { alert("檔案讀取錯誤: " + err.message); }
             };
             reader.readAsText(file);
         }
 
         function copyDifficulty() {
             const text = document.getElementById('summary-difficulty').innerText;
-            if(text) navigator.clipboard.writeText(text).then(() => showToast(`📋 Copied: ${text}`));
+            if(text) navigator.clipboard.writeText(text).then(() => showToast(`📋 已複製: ${text}`));
         }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
             toast.classList.remove('hidden'); toast.classList.remove('animate-toast-out'); toast.classList.add('animate-toast-in');
-            setTimeout(() => { toast.classList.remove('animate-toast-in'); toast.classList.add('animate-toast-out'); setTimeout(() => toast.classList.add('hidden'), 300); }, 2000);
+            setTimeout(() => { toast.classList.remove('animate-toast-in'); toast.classList.add('animate-toast-out'); setTimeout(() => toast.classList.add('hidden'), 300); }, 2200);
         }
 
         function copyAndSpeak(text, idx) {
-            navigator.clipboard.writeText(text).then(() => showToast(`Copied: "${text}"`)).catch(err => console.error(err));
+            navigator.clipboard.writeText(text).then(() => showToast(`已複製單字: "${text}"`)).catch(err => console.error(err));
             speakOne(text, idx);
-        }
-
-        function playRollSound() {
-            try {
-                const ctx = getAudioContext();
-                if (!ctx) return;
-                if (ctx.state === 'suspended') ctx.resume();
-                let now = ctx.currentTime;
-                const bounces = 6;
-                let t = now;
-                for (let i = 0; i < bounces; i++) {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(160 + Math.random() * 40 - i * 15, t);
-                    gain.gain.setValueAtTime(0.12, t);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t);
-                    osc.stop(t + 0.08);
-                    t += 0.12 + (i * 0.08);
-                }
-                setTimeout(() => {
-                    playTone(587.33, 'sine', 0.12);
-                    setTimeout(() => playTone(880, 'sine', 0.25), 80);
-                }, 1400);
-            } catch (e) {
-                console.warn("Roll sound failed", e);
-            }
-        }
-
-        function rollDice() {
-            if (diceRolls >= maxRolls) return;
-            const btn = document.getElementById('dice-btn');
-            const cube = document.getElementById('cube');
-            if (!cube) return;
-
-            btn.style.pointerEvents = 'none';
-            playRollSound();
-
-            // Choose target face
-            // Face 1 (16.6%): SHORT
-            // Face 2, 3, 4, 5 (66.6%): MEDIUM
-            // Face 6 (16.6%): LONG
-            const roll = Math.floor(Math.random() * 6) + 1;
-            
-            let label = "", colorClass = "";
-            if (roll === 1) { 
-                label = "SHORT"; colorClass = "text-green-600"; selectedLength = "Short"; 
-            } else if (roll === 6) { 
-                label = "LONG"; colorClass = "text-purple-600"; selectedLength = "Long"; 
-            } else { 
-                label = "MEDIUM"; colorClass = "text-blue-600"; selectedLength = "Medium"; 
-            }
-
-            const baseAngles = [
-                { x: 0, y: 0 },       // Face 1
-                { x: 0, y: -90 },     // Face 2
-                { x: 0, y: -180 },    // Face 3
-                { x: 0, y: 90 },      // Face 4
-                { x: -90, y: 0 },     // Face 5
-                { x: 90, y: 0 }       // Face 6
-            ];
-
-            const angles = baseAngles[roll - 1];
-            const spins = 3; // Number of full spins
-            const extraX = Math.floor(Math.random() * 3) * 360;
-            const extraY = Math.floor(Math.random() * 3) * 360;
-            const targetX = angles.x + (spins * 360) + extraX;
-            const targetY = angles.y + (spins * 360) + extraY;
-
-            // Spin off-axis for premium 3D feeling
-            cube.style.transform = `translateZ(-40px) rotateX(${targetX}deg) rotateY(${targetY}deg) rotateZ(45deg)`;
-
-            diceRolls++;
-            document.getElementById('roll-count').innerText = maxRolls - diceRolls;
-
-            setTimeout(() => {
-                const rect = btn.getBoundingClientRect();
-                const x = (rect.left + rect.width / 2) / window.innerWidth;
-                const y = (rect.top + rect.height / 2) / window.innerHeight;
-                safeConfetti({
-                    particleCount: 50,
-                    spread: 60,
-                    origin: { x: x, y: y },
-                    colors: selectedLength === "Short" ? ['#10b981', '#34d399'] : selectedLength === "Medium" ? ['#3b82f6', '#60a5fa'] : ['#8b5cf6', '#a78bfa']
-                });
-
-                const panel = document.getElementById('dice-panel');
-                panel.classList.remove('glow-short', 'glow-medium', 'glow-long');
-                if (selectedLength === "Short") panel.classList.add('glow-short');
-                else if (selectedLength === "Medium") panel.classList.add('glow-medium');
-                else if (selectedLength === "Long") panel.classList.add('glow-long');
-
-                document.getElementById('dice-result').innerText = label;
-                document.getElementById('dice-result').className = `text-3xl font-serif font-bold ${colorClass}`;
-                document.getElementById('generate-btn').disabled = false;
-                document.getElementById('generate-btn').classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
-                document.getElementById('generate-btn').classList.add('bg-brand-600', 'text-white', 'hover:bg-brand-700', 'shadow-lg');
-                document.getElementById('btn-text').innerText = `Generate ${selectedLength}`;
-
-                if (diceRolls < maxRolls) {
-                    btn.style.pointerEvents = 'auto';
-                } else {
-                    btn.classList.add('opacity-50');
-                    btn.style.pointerEvents = 'none';
-                }
-            }, 1800);
         }
 
         function toggleSourceInput() {
@@ -822,10 +1148,10 @@
             if(t === 'reading') { audioBar.classList.remove('hidden'); } else { audioBar.classList.add('hidden'); }
             ['preview','reading','quiz'].forEach(x => {
                 document.getElementById(`view-${x}`).classList.add('hidden');
-                document.getElementById(`tab-${x}`).className = "px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50";
+                document.getElementById(`tab-${x}`).className = "px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 transition";
             });
             document.getElementById(`view-${t}`).classList.remove('hidden');
-            document.getElementById(`tab-${t}`).className = "px-6 py-2 rounded-lg text-sm font-bold bg-brand-600 text-white shadow-sm";
+            document.getElementById(`tab-${t}`).className = "px-6 py-2.5 rounded-xl text-sm font-bold bg-brand-600 text-white shadow-sm transition";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -834,6 +1160,9 @@
             location.reload();
         }
 
+        // ==========================================
+        // GENERATION CONTROLLER (startApp)
+        // ==========================================
         async function startApp() {
             const key = document.getElementById('apiKey').value.trim();
             if(key) localStorage.setItem('gemini_api_key', key);
@@ -841,20 +1170,24 @@
             const grade = document.getElementById('gradeLevel').value;
             const isPreset = document.querySelector('input[name="sourceType"]:checked').value === 'preset';
             let topic = isPreset ? document.getElementById('presetSource').value : document.getElementById('customTopic').value.trim();
+            
             const errorEl = document.getElementById('error-msg');
             errorEl.classList.add('hidden');
-            if(!key || !topic) { document.getElementById('error-text').innerText = "Please enter API Key and Topic."; errorEl.classList.remove('hidden'); return; }
+            if(!key || !topic) { 
+                document.getElementById('error-text').innerText = "請輸入 Gemini API Key 與學習主題 (Topic)。"; 
+                errorEl.classList.remove('hidden'); 
+                return; 
+            }
 
             const btn = document.getElementById('generate-btn');
-            btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
-            document.getElementById('btn-text').innerText = "Finding News..."; 
+            btn.disabled = true; btn.classList.add('opacity-75', 'cursor-wait');
+            document.getElementById('btn-text').innerText = "正在檢索即時新聞與主題素材..."; 
             document.getElementById('spinner').classList.remove('hidden');
 
             let newsContext = "", finalTopic = topic, sourceLink = "";
             if (isPreset) {
                 if (RSS_FEEDS[topic]) {
                     try {
-                        // Add 5s timeout to RSS fetch
                         const controller = new AbortController();
                         const timeout = setTimeout(() => controller.abort(), 5000);
                         const res = await fetch(RSS_FEEDS[topic], { signal: controller.signal });
@@ -868,7 +1201,6 @@
                         }
                     } catch(e) {
                         console.warn(`RSS failed for ${topic}, using fallback topic:`, e.message);
-                        // Use built-in fallback topics
                         if (RSS_FALLBACK_TOPICS[topic]) {
                             const fallbacks = RSS_FALLBACK_TOPICS[topic];
                             finalTopic = fallbacks[Math.floor(Math.random() * fallbacks.length)];
@@ -882,39 +1214,53 @@
                     finalTopic = topicsList[Math.floor(Math.random() * topicsList.length)];
                     newsContext = `Academic SAT Style Reading Passage focusing on ${topic.replace('SAT ', '')}.`;
                 }
-            } else { newsContext = "User custom topic."; }
+            } else {
+                if (selectedTrendingSourceUrl && finalTopic === selectedTrendingTopic) {
+                    newsContext = `Based on real-time breaking news: "${finalTopic}". Excerpt: "${selectedTrendingDesc || ''}". Source link: ${selectedTrendingSourceUrl}`;
+                    sourceLink = selectedTrendingSourceUrl;
+                } else {
+                    newsContext = "User custom topic.";
+                }
+            }
 
-            document.getElementById('btn-text').innerText = "Writing...";
-            _lastAction = 'generate'; // Track for retry
+            document.getElementById('btn-text').innerText = `AI 正在撰寫文章與題目 (${selectedLength})...`;
+            _lastAction = 'generate';
             let lengthInstruction = selectedLength === "Short" ? "approx 250 words" : selectedLength === "Long" ? "approx 800 words" : "approx 450-500 words";
             const prompt = `Role: SAT Tutor. Level: ${grade}. TOPIC: ${finalTopic}. CONTEXT: ${newsContext}. Constraint: Write an article that is **${lengthInstruction}**. 
             Rules: 
-            1. Article/Quiz in English. 
-            2. ALL Explanations/Definitions MUST be in **Traditional Chinese (Taiwan / 繁體中文)** ONLY. Do NOT use Simplified Chinese.
-            Output JSON: { "title":"", "article":"", "difficulty":"(e.g. CEFR B2 / Lexile 1000)", "takeaways":["Point 1", "Point 2", "Point 3"], "sourceMeta":"(Based on...)", "vocabulary":[{"word":"", "pos":"(e.g. n., v.)", "def":"", "trans":"", "ex":""}], "grammar":{"en":"","zh":""}, "quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}] }. Req: 6 vocab, 10 questions.`;
+            1. Article and Quiz MUST be in English.
+            2. ALL Explanations, Translations, and Definitions MUST be in **Traditional Chinese (Taiwan / 繁體中文)** ONLY. Do NOT use Simplified Chinese.
+            Output JSON: { "title":"", "article":"", "difficulty":"(e.g. CEFR B2 / Lexile 1050)", "takeaways":["重點一", "重點二", "重點三"], "sourceMeta":"(Based on...)", "vocabulary":[{"word":"", "pos":"(e.g. n., v.)", "def":"", "trans":"", "ex":""}], "grammar":{"en":"", "zh":""}, "quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}] }. Req: 6 vocabulary items, 10 quiz questions.`;
 
             try {
                 const data = await callGemini(key, model, prompt);
-                // Validate essential response data before using it
-                if (!data || !data.article || !data.title) throw new Error('AI returned incomplete data. Please try again.');
+                if (!data || !data.article || !data.title) throw new Error('AI 返回資料不完整，請再試一次。');
                 if (!data.vocabulary || data.vocabulary.length === 0) data.vocabulary = [];
-                if (!data.quiz || data.quiz.length === 0) throw new Error('AI returned no quiz questions. Please try again.');
+                if (!data.quiz || data.quiz.length === 0) throw new Error('AI 未能生成測驗題目，請再試一次。');
                 if (!data.grammar) data.grammar = { en: '', zh: '' };
                 
                 userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
                 document.getElementById('nav-current-score').innerText = 0;
                 document.getElementById('quiz-summary').classList.add('hidden');
-                courseData = data; courseData.sourceUrl = sourceLink; initUI();
-                _lastAction = null; // Clear on success
+                courseData = data; courseData.sourceUrl = sourceLink; courseData.gradeLevel = grade;
+                initUI();
+                _lastAction = null;
             } catch(e) { 
                 console.error('startApp failed:', e);
-                document.getElementById('error-text').innerText = `Error: ${e.message}`; 
+                document.getElementById('error-text').innerText = `生成錯誤: ${e.message}`; 
                 errorEl.classList.remove('hidden'); 
-                btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
             } 
-            finally { document.getElementById('btn-text').innerText = `Generate ${selectedLength}`; document.getElementById('spinner').classList.add('hidden'); }
+            finally { 
+                btn.disabled = false; btn.classList.remove('opacity-75', 'cursor-wait');
+                const lengthLabels = { 'Short': '簡短篇幅 Short', 'Medium': '標準篇幅 Medium', 'Long': '長篇進階 Long' };
+                document.getElementById('btn-text').innerText = `🚀 開始生成課程 (${lengthLabels[selectedLength] || selectedLength})`; 
+                document.getElementById('spinner').classList.add('hidden'); 
+            }
         }
 
+        // ==========================================
+        // TEXT SELECTION & TRANSLATION
+        // ==========================================
         document.addEventListener('mouseup', function(e) {
             if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
             const popup = document.getElementById('selection-popup');
@@ -942,35 +1288,35 @@
                 const res = await callGemini(key, model, `Translate to Traditional Chinese (Taiwan). Concise.\n\n"${currentSelectionText}"`, false);
                 document.getElementById('popup-result').innerText = res;
             } catch(e) { 
-                document.getElementById('popup-result').innerText = "Error: " + e.message; 
+                document.getElementById('popup-result').innerText = "翻譯錯誤: " + e.message; 
             }
             finally { document.getElementById('popup-loader').classList.add('hidden'); }
         }
         function closePopup() { document.getElementById('selection-popup').classList.add('hidden'); window.getSelection().removeAllRanges(); }
 
         // ==========================================
-        // MODEL FALLBACK CHAIN — only currently valid models
-        // Updated 2026-06-25: removed all deprecated/invalid aliases
-        // Order: most reliable first, then newest, then pro
+        // GEMINI API CALLER & FALLBACK SYSTEM
         // ==========================================
         let MODEL_FALLBACK_CHAIN = [
-            'gemini-2.5-flash',       // Current stable default (most reliable)
-            'gemini-3.5-flash',       // Newest GA model
-            'gemini-2.5-pro',         // Current pro option
+            'gemini-2.5-flash',
+            'gemini-2.5-pro',
+            'gemini-2.0-flash',
+            'gemini-1.5-flash',
+            'gemini-1.5-pro'
         ];
 
         async function callGemini(key, model, prompt, expectJSON = true, retryCount = 0, disableFallback = false) {
             try {
                 if (retryCount > 0) {
                     const btnText = document.getElementById('btn-text');
-                    if (btnText) btnText.innerText = `Connection unstable... Retrying (${retryCount}/3)`;
+                    if (btnText) btnText.innerText = `連線重試中... (${retryCount}/3)`;
                 }
                 const requestBody = { contents: [{ parts: [{ text: prompt }] }] };
                 if (expectJSON) {
                     requestBody.generationConfig = { responseMimeType: "application/json" };
                 }
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+                const timeout = setTimeout(() => controller.abort(), 35000);
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(requestBody),
                     signal: controller.signal
@@ -985,16 +1331,14 @@
                     throw err;
                 }
                 
-                // Defensive: check response structure
                 if (!json.candidates || !json.candidates[0]?.content?.parts?.[0]?.text) {
-                    throw new Error('Unexpected API response structure — no text returned');
+                    throw new Error('API 未能返回有效文字內容');
                 }
                 let text = json.candidates[0].content.parts[0].text;
                 if (expectJSON) { 
                     const jsonMatch = text.match(/\{[\s\S]*\}/); 
-                    if (!jsonMatch) throw new Error("Invalid JSON from AI");
+                    if (!jsonMatch) throw new Error("AI 返回之 JSON 格式不正確");
                     const parsed = JSON.parse(jsonMatch[0]);
-                    // Validate essential fields
                     if (parsed.vocabulary && !Array.isArray(parsed.vocabulary)) parsed.vocabulary = [];
                     if (parsed.quiz && !Array.isArray(parsed.quiz)) parsed.quiz = [];
                     if (parsed.grammar && typeof parsed.grammar === 'string') parsed.grammar = { en: parsed.grammar, zh: '' };
@@ -1005,31 +1349,25 @@
             } catch (e) { 
                 console.warn(`Attempt ${retryCount+1} failed (model: ${model}): ${e.message}`);
                 
-                // 404 = model doesn't exist, don't retry, go straight to fallback
                 const isModelNotFound = e.isApiError && (e.statusCode === 404 || e.statusCode === 400);
-                // Transient = network issue, 503 high demand, 429 quota, 500+ server error
                 const isTransient = !e.isApiError || e.statusCode === 503 || e.statusCode === 429 || e.statusCode >= 500;
                 
-                // 1. Retry transient errors with exponential backoff (skip if model doesn't exist)
-                const maxRetries = disableFallback ? 1 : 3; // Fallback models only get 1 retry
+                const maxRetries = disableFallback ? 1 : 2;
                 if (!isModelNotFound && isTransient && retryCount < maxRetries) {
                     const delay = 1500 * (retryCount + 1);
                     const btnText = document.getElementById('btn-text');
-                    if (btnText) btnText.innerText = `Retrying... (${retryCount+1}/${maxRetries})`;
+                    if (btnText) btnText.innerText = `伺服器連線繁忙，重試中 (${retryCount+1}/${maxRetries})...`;
                     await new Promise(r => setTimeout(r, delay));
                     return callGemini(key, model, prompt, expectJSON, retryCount + 1, disableFallback);
                 }
                 
-                // 2. If exhausted retries OR hard error, try fallback chain
                 if (!disableFallback) {
-                    console.log(`[Model Fallback] ${model} failed (${isModelNotFound ? 'not found' : 'error'}), trying fallbacks...`);
+                    console.log(`[Model Fallback] ${model} failed, trying fallback chain...`);
                     for (const fallbackModel of MODEL_FALLBACK_CHAIN) {
                         if (fallbackModel === model) continue;
-                        
                         console.log(`[Model Fallback] Trying ${fallbackModel}...`);
                         const btnText = document.getElementById('btn-text');
-                        if (btnText) btnText.innerText = `Trying ${fallbackModel}...`;
-                        
+                        if (btnText) btnText.innerText = `切換備用模型 ${fallbackModel}...`;
                         try {
                             return await callGemini(key, fallbackModel, prompt, expectJSON, 0, true);
                         } catch (fallbackErr) {
@@ -1037,10 +1375,9 @@
                             continue;
                         }
                     }
-                    // All failed — give actionable error message
-                    const hint = e.statusCode === 403 ? 'Your API key may be invalid or restricted.' 
-                               : e.statusCode === 429 ? 'API quota exceeded. Wait a minute and try again.'
-                               : 'All models are unavailable. Check your API key or try again later.';
+                    const hint = e.statusCode === 403 ? '您的 API Key 可能無效或未開通權限。' 
+                               : e.statusCode === 429 ? 'API 配額已滿，請稍候一分鐘後再試。'
+                               : '所有模型連線暫時不可用，請檢查 API Key 或網路連線。';
                     throw new Error(`${hint} (${e.message})`);
                 }
                 
@@ -1050,8 +1387,6 @@
 
         // ==========================================
         // DYNAMIC MODEL DISCOVERY
-        // Queries the API for actually available models
-        // and updates both the dropdown and fallback chain
         // ==========================================
         async function discoverModels(key) {
             try {
@@ -1063,37 +1398,28 @@
                     .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
                     .map(m => m.name.replace('models/', ''))
                     .filter(name => {
-                        // Only include main gemini models, skip embedding/vision-only/aqa etc
                         return name.startsWith('gemini-') && !name.includes('embedding') 
-                            && !name.includes('aqa') && !name.includes('imagen');
+                            && !name.includes('aqa') && !name.includes('imagen') && !name.includes('robotics');
                     });
                 
                 if (validModels.length === 0) return null;
                 
-                // Sort: prefer flash models, then pro, prefer higher version numbers
                 const sortScore = (name) => {
                     let score = 0;
-                    // Version scoring
-                    if (name.includes('3.5')) score += 100;
-                    else if (name.includes('3.1')) score += 90;
-                    else if (name.includes('2.5')) score += 80;
-                    else if (name.includes('2.0')) score += 50;
-                    else if (name.includes('1.5')) score += 30;
-                    // Type scoring  
-                    if (name.includes('flash') && !name.includes('lite')) score += 20;
-                    if (name.includes('pro')) score += 10;
-                    // Prefer non-versioned (general) over specific versions like -001
-                    if (!name.match(/-\d{3}$/)) score += 5;
-                    // Deprioritize lite and experimental
-                    if (name.includes('lite')) score -= 10;
-                    if (name.includes('exp')) score -= 15;
+                    if (name.includes('2.5-flash')) score += 200;
+                    else if (name.includes('2.5-pro')) score += 180;
+                    else if (name.includes('2.0-flash')) score += 150;
+                    else if (name.includes('1.5-flash')) score += 100;
+                    else if (name.includes('1.5-pro')) score += 90;
+                    else if (name.includes('flash')) score += 50;
+                    if (!name.match(/-\d{3}$/)) score += 10;
+                    if (name.includes('exp')) score -= 20;
                     return score;
                 };
                 
-                // De-duplicate: keep only the best-scored version per base name
                 const seen = new Map();
                 validModels.forEach(name => {
-                    const baseName = name.replace(/-\d{3}$/, ''); // remove version suffixes like -001
+                    const baseName = name.replace(/-\d{3}$/, '');
                     const score = sortScore(name);
                     if (!seen.has(baseName) || score > seen.get(baseName).score) {
                         seen.set(baseName, { name, score });
@@ -1118,38 +1444,30 @@
             select.innerHTML = '';
             
             const labels = {
-                'flash': 'Fast & Balanced',
-                'pro': 'Best Intelligence',
-                'lite': 'Lightweight'
+                'gemini-2.5-flash': '推薦 / 速度與品質最佳平衡 ★',
+                'gemini-2.5-pro': '深度思考 / SAT 題型最高品質',
+                'gemini-2.0-flash': '極速生成 / 低延遲',
+                'gemini-1.5-flash': '經典穩定版',
+                'gemini-1.5-pro': '經典進階版'
             };
-            // Start with discovered models — don't inject deprecated aliases
+            
             const finalModels = [];
-            models.forEach(m => {
-                if (!finalModels.includes(m)) finalModels.push(m);
-            });
-            // Ensure our known-good defaults are present
-            ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-2.5-pro'].forEach(m => {
+            models.forEach(m => { if (!finalModels.includes(m)) finalModels.push(m); });
+            ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-flash'].forEach(m => {
                 if (!finalModels.includes(m)) finalModels.push(m);
             });
             
             finalModels.forEach((model, i) => {
                 const opt = document.createElement('option');
                 opt.value = model;
-                const type = model.includes('pro') ? 'pro' : model.includes('lite') ? 'lite' : 'flash';
-                const label = model === 'gemini-flash-latest' ? 'Universal Default' : (labels[type] || 'General');
-                opt.textContent = `${model} (${label})${i === 0 ? ' ★' : ''}`;
-                if (model === currentValue) opt.selected = true;
+                const desc = labels[model] || (model.includes('pro') ? '高品質' : '快速');
+                opt.textContent = `${model} (${desc})${i === 0 && !desc.includes('★') ? ' ★' : ''}`;
+                if (model === currentValue || (i === 0 && !currentValue)) opt.selected = true;
                 select.appendChild(opt);
             });
             
-            // If current selection isn't in new list, select first
-            if (!models.includes(currentValue)) select.selectedIndex = 0;
-            
-            // Also update fallback chain dynamically
             MODEL_FALLBACK_CHAIN.length = 0;
             finalModels.forEach(m => MODEL_FALLBACK_CHAIN.push(m));
-            
-            console.log('[Model Discovery] Updated dropdown with:', models);
         }
 
         async function testApiKeyAndListModels() {
@@ -1157,109 +1475,135 @@
             const outputEl = document.getElementById('models-list-output');
             outputEl.classList.remove('hidden');
             if (!key) {
-                outputEl.innerText = "Please enter API Key first.";
+                outputEl.innerText = "請先輸入 Gemini API Key。";
                 return;
             }
-            outputEl.innerText = "Testing key and discovering available models...";
+            outputEl.innerText = "正在驗證金鑰並探索可用模型...";
             try {
                 const models = await discoverModels(key);
                 if (models && models.length > 0) {
                     updateModelDropdown(models);
-                    outputEl.innerText = `✅ API Key works! Found ${models.length} models:\n${models.join('\n')}\n\nDropdown updated automatically.`;
+                    outputEl.innerText = `✅ API Key 驗證成功！可用模型清單：\n${models.join('\n')}\n\n已為您更新下拉選單並設為最佳推薦。`;
                 } else {
-                    // Fallback: try to list raw models
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-                    const data = await res.json();
-                    if (data.error) {
-                        outputEl.innerText = `API Error: ${data.error.message}`;
-                    } else if (data.models) {
-                        const allModels = data.models.map(m => m.name.replace('models/', ''));
-                        outputEl.innerText = "All models (raw):\n" + allModels.join('\n');
-                    } else {
-                        outputEl.innerText = "No models found or unexpected API response.";
-                    }
+                    outputEl.innerText = "金鑰已連線，使用內建標準推薦清單。";
                 }
             } catch (err) {
-                outputEl.innerText = `Connection Failed: ${err.message}`;
+                outputEl.innerText = `連線失敗: ${err.message}`;
             }
         }
 
-        async function generateNewQuiz() {
-            const key = document.getElementById('apiKey').value;
-            const model = document.getElementById('modelName').value;
-            const spinnerEl = document.getElementById('spinner-more');
-            if (spinnerEl) spinnerEl.classList.remove('hidden');
-            _lastAction = 'newQuiz';
-            try {
-                const data = await callGemini(key, model, `STRICT JSON ONLY. Context: "${courseData.title}". Task: 10 NEW SAT questions. Rules: Explanations in **Traditional Chinese (Taiwan)** ONLY. JSON: {"quiz":[{"q":"","opt":[],"ans":0,"expEn":"","expZh":""}]}`);
-                if (!data.quiz || !Array.isArray(data.quiz) || data.quiz.length === 0) throw new Error('No quiz questions returned');
-                courseData.quiz = data.quiz; 
-                userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
-                document.getElementById('nav-current-score').innerText = 0;
-                document.getElementById('quiz-summary').classList.add('hidden');
-                document.getElementById('combo-badge').classList.add('hidden');
-                renderQuiz(); window.scrollTo(0,0);
-                _lastAction = null;
-            } catch(e) { 
-                alert("Error: " + e.message); 
-            } 
-            finally { if (spinnerEl) spinnerEl.classList.add('hidden'); }
-        }
-
+        // ==========================================
+        // UI RENDERING & DASHBOARD
+        // ==========================================
         function initUI() {
             document.getElementById('setup-panel').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('vocab-list').innerHTML = courseData.vocabulary.map((v, i) => `<div class="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:shadow-md transition"><div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2 flex-wrap"><span class="font-bold text-lg text-brand-700 cursor-copy border-b-2 border-transparent hover:border-brand-200 transition" onclick="copyAndSpeak('${v.word}')" title="Click to Copy & Read">${v.word}</span><span class="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full italic font-serif">${v.pos || 'n.'}</span><a href="https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(v.word)}" target="_blank" class="text-xs text-slate-400 hover:text-brand-600 transition" title="Look up"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><button onclick="copyAndSpeak('${v.word}')" class="text-slate-400 hover:text-brand-500"><i class="fa-solid fa-volume-high"></i></button></div><div class="text-slate-800 font-bold mb-1">${v.trans}</div><div class="text-sm text-slate-500 italic">${v.def}</div></div>`).join('');
+            document.getElementById('nav-line-share-btn').classList.remove('hidden');
+            
+            document.getElementById('vocab-list').innerHTML = courseData.vocabulary.map((v, i) => `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-extrabold text-lg text-brand-700 cursor-copy border-b-2 border-transparent hover:border-brand-200 transition" onclick="copyAndSpeak('${v.word}')" title="點擊發音與複製">${v.word}</span>
+                            <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full italic font-serif">${v.pos || 'n.'}</span>
+                            <a href="https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(v.word)}" target="_blank" class="text-xs text-slate-400 hover:text-brand-600 transition" title="劍橋字典查詢"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                        <button onclick="copyAndSpeak('${v.word}')" class="text-slate-400 hover:text-brand-500 text-base"><i class="fa-solid fa-volume-high"></i></button>
+                    </div>
+                    <div class="text-slate-800 font-bold mb-1 text-sm">${v.trans}</div>
+                    <div class="text-xs text-slate-600 leading-relaxed mb-1">${v.def}</div>
+                    ${v.ex ? `<div class="text-[11px] text-slate-400 italic font-serif mt-1">"${v.ex}"</div>` : ''}
+                </div>
+            `).join('');
+
             document.getElementById('grammar-en').innerText = courseData.grammar.en || courseData.grammar;
             document.getElementById('grammar-zh').innerText = courseData.grammar.zh || "";
             document.getElementById('article-title').innerText = courseData.title;
-            let metaHtml = ''; if(courseData.sourceUrl) { metaHtml += `<a href="${courseData.sourceUrl}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 hover:bg-brand-200 text-brand-700 rounded-lg text-sm font-bold uppercase transition"><i class="fa-solid fa-newspaper"></i> Read Original</a>`; }
-            if(courseData.sourceMeta) { metaHtml += `<span class="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-sm font-medium italic">${courseData.sourceMeta}</span>`; }
+            
+            let metaHtml = '';
+            if(courseData.sourceUrl) { 
+                metaHtml += `<a href="${courseData.sourceUrl}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-100 hover:bg-brand-200 text-brand-700 rounded-lg text-xs font-bold uppercase transition"><i class="fa-solid fa-newspaper"></i> Read Original News</a>`; 
+            }
+            if(courseData.sourceMeta) { 
+                metaHtml += `<span class="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-xs font-medium italic">${courseData.sourceMeta}</span>`; 
+            }
             document.getElementById('source-meta-container').innerHTML = metaHtml;
+            
             let processed = courseData.article.split(/\n\n+/).map(para => para.split(/(\s+)/).map(w => w.trim() ? `<span class="word-span temp-idx">${w}</span>` : w).join(''));
-            const imgTag = `<img src="https://image.pollinations.ai/prompt/${encodeURIComponent(courseData.title + ' anime style digital art scene detail')}?width=768&height=432&nologo=true" class="article-image" alt="AI Illustration" onerror="this.style.display='none'">`;
+            const imgTag = `<img src="https://image.pollinations.ai/prompt/${encodeURIComponent(courseData.title + ' conceptual editorial digital illustration detail')}?width=768&height=432&nologo=true" class="article-image shadow-md" alt="AI Illustration" onerror="this.style.display='none'">`;
             if (processed.length > 1) processed.splice(1, 0, imgTag);
             document.getElementById('article-body').innerHTML = processed.map(c => c.startsWith('<img') ? c : `<p class="mb-4">${c}</p>`).join('');
+            
             let gIdx = 0;
             document.querySelectorAll('.word-span.temp-idx').forEach(span => {
                 const idx = gIdx++; const t = span.innerText.replace(/[^\w']/g,"");
                 span.onclick = () => copyAndSpeak(t, idx); span.id = `word-${idx}`; span.classList.remove('temp-idx');
             });
             wordSpansCache = Array.from(document.querySelectorAll('.word-span'));
-            renderQuiz(); switchTab('preview');
+            
+            renderQuiz(); 
+            switchTab('preview');
         }
 
         function renderQuiz() {
             document.getElementById('nav-total-score').innerText = courseData.quiz.length * 10;
-            document.getElementById('quiz-container').innerHTML = courseData.quiz.map((q, i) => `<div class="clean-card p-6" id="q-card-${i}"><div class="flex gap-4 mb-4"><span class="bg-slate-100 text-slate-600 px-3 py-1 rounded font-bold text-sm h-fit">Q${i+1}</span><div class="font-bold text-lg text-slate-800">${q.q}</div></div><div class="space-y-2 pl-0 md:pl-12">${q.opt.map((o,idx)=>`<button onclick="check(${i},${idx},this)" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition opt-btn-${i}" data-idx="${idx}"><span class="font-bold mr-2 text-slate-400">${String.fromCharCode(65+idx)}.</span>${o}</button>`).join('')}</div><div id="fb-${i}" class="hidden mt-6 ml-0 md:ml-12 p-4 bg-slate-50 rounded-lg border border-slate-200"><div class="font-bold mb-2 st"></div><div class="text-sm text-slate-700">${q.expEn}</div><div class="text-sm text-slate-500 mt-2 border-t border-slate-200 pt-2">${q.expZh}</div></div></div>`).join('');
+            document.getElementById('quiz-container').innerHTML = courseData.quiz.map((q, i) => `
+                <div class="clean-card p-6 md:p-8" id="q-card-${i}">
+                    <div class="flex gap-4 mb-4">
+                        <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-lg font-bold text-sm h-fit">Q${i+1}</span>
+                        <div class="font-bold text-base md:text-lg text-slate-800 leading-snug">${q.q}</div>
+                    </div>
+                    <div class="space-y-2.5 pl-0 md:pl-12">
+                        ${q.opt.map((o,idx)=>`
+                            <button onclick="check(${i},${idx},this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition opt-btn-${i} text-sm font-medium" data-idx="${idx}">
+                                <span class="font-bold mr-2 text-brand-600">${String.fromCharCode(65+idx)}.</span>${o}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="fb-${i}" class="hidden mt-6 ml-0 md:ml-12 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="font-bold mb-2 st"></div>
+                        <div class="text-xs text-slate-700 leading-relaxed">${q.expEn}</div>
+                        <div class="text-xs text-slate-500 mt-2 border-t border-slate-200 pt-2 leading-relaxed">${q.expZh}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function check(qIdx, sIdx, btn) {
             try {
                 const ctx = getAudioContext();
                 if (ctx && ctx.state === 'suspended') ctx.resume();
-                const q = courseData.quiz[qIdx]; const fb = document.getElementById(`fb-${qIdx}`);
+                const q = courseData.quiz[qIdx]; 
+                const fb = document.getElementById(`fb-${qIdx}`);
                 const card = document.getElementById(`q-card-${qIdx}`);
                 document.querySelectorAll(`.opt-btn-${qIdx}`).forEach(b => { b.disabled = true; b.classList.add('opacity-60'); });
                 btn.classList.remove('opacity-60');
+                
                 if(sIdx === q.ans) {
-                    btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
-                    fb.querySelector('.st').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-check"></i> Correct!</span>';
+                    btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
+                    fb.querySelector('.st').innerHTML = '<span class="text-emerald-600 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Correct! 答對了！</span>';
                     userScore += 10; comboStreak++; 
                     playCorrectSound(); safeConfetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
                     updateClimber(true);
-                    if(comboStreak > 1) { const b = document.getElementById('combo-badge'); b.innerText = `COMBO x${comboStreak}`; b.classList.remove('hidden'); b.classList.add('animate-combo-pop'); setTimeout(()=>b.classList.remove('animate-combo-pop'), 300); }
+                    if(comboStreak > 1) { 
+                        const b = document.getElementById('combo-badge'); 
+                        b.innerText = `COMBO x${comboStreak}`; 
+                        b.classList.remove('hidden'); 
+                        b.classList.add('animate-combo-pop'); 
+                        setTimeout(()=>b.classList.remove('animate-combo-pop'), 300); 
+                    }
                 } else {
-                    btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
-                    document.querySelector(`.opt-btn-${qIdx}[data-idx="${q.ans}"]`).classList.add('bg-emerald-100', 'border-emerald-500');
-                    fb.querySelector('.st').innerHTML = '<span class="text-red-500"><i class="fa-solid fa-xmark"></i> Incorrect</span>';
+                    btn.classList.add('bg-red-100', 'border-red-500', 'text-red-900', 'font-bold');
+                    document.querySelector(`.opt-btn-${qIdx}[data-idx="${q.ans}"]`).classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+                    fb.querySelector('.st').innerHTML = '<span class="text-red-500 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> Incorrect 答錯了</span>';
                     comboStreak = 0; document.getElementById('combo-badge').classList.add('hidden'); 
                     playWrongSound();
                     updateClimber(false);
                     card.classList.add('animate-flash-red', 'animate-card-shake'); 
                     setTimeout(()=>card.classList.remove('animate-flash-red', 'animate-card-shake'), 500);
                 }
-                fb.classList.remove('hidden'); document.getElementById('nav-current-score').innerText = userScore;
+                fb.classList.remove('hidden'); 
+                document.getElementById('nav-current-score').innerText = userScore;
                 
                 if(++answeredCount >= courseData.quiz.length) { 
                     document.getElementById('quiz-summary').classList.remove('hidden'); 
@@ -1267,18 +1611,21 @@
                     document.getElementById('final-rank').innerText = getRankTitle(userScore);
                     
                     document.getElementById('summary-title').innerText = courseData.title;
-                    document.getElementById('summary-difficulty').innerText = courseData.difficulty || "Level: Unknown";
+                    document.getElementById('summary-difficulty').innerText = courseData.difficulty || `Level: ${courseData.gradeLevel || 'Standard'}`;
                     const takeawaysList = document.getElementById('summary-takeaways');
                     takeawaysList.innerHTML = '';
                     if(courseData.takeaways && courseData.takeaways.length > 0) {
                         courseData.takeaways.forEach(pt => {
                             const li = document.createElement('li'); li.innerText = pt; takeawaysList.appendChild(li);
                         });
-                    } else { takeawaysList.innerHTML = '<li>No summary available.</li>'; }
+                    } else { takeawaysList.innerHTML = '<li>No summary points available.</li>'; }
 
                     setTimeout(()=>document.getElementById('quiz-summary').scrollIntoView({behavior:'smooth'}), 600);
                 } else {
-                    setTimeout(() => { const next = document.getElementById(`q-card-${qIdx+1}`); if(next) next.scrollIntoView({behavior:'smooth', block:'center'}); }, 800);
+                    setTimeout(() => { 
+                        const next = document.getElementById(`q-card-${qIdx+1}`); 
+                        if(next) next.scrollIntoView({behavior:'smooth', block:'center'}); 
+                    }, 800);
                 }
             } catch (e) {
                 console.error("Check Error:", e);
@@ -1286,8 +1633,11 @@
             }
         }
 
+        // ==========================================
+        // TEXT-TO-SPEECH
+        // ==========================================
         function getVoice() { 
-            const idx = document.getElementById('voice-select').value;
+            const idx = document.getElementById('voice-select')?.value;
             return voices[idx] || synth.getVoices()[0]; 
         }
         function updateVoice() { stopReadAloud(); }
@@ -1302,7 +1652,6 @@
             synth.speak(u); 
         }
 
-        // --- CHUNKED READ ALOUD (Fixed) ---
         function toggleReadAloud() {
             if(isReading) { 
                 synth.cancel(); isReading=false; updateAudioUI("Resume"); 
@@ -1343,11 +1692,197 @@
             synth.speak(u);
         }
 
-        function stopReadAloud() { synth.cancel(); isReading=false; currentWordIndex=0; updateAudioUI("Read"); document.getElementById('btn-stop').classList.add('hidden'); document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current')); }
-        function updateAudioUI(s) { document.getElementById('btn-read-text').innerText = s; document.getElementById('btn-read-icon').innerHTML = s==="Pause" ? '<i class="fa-solid fa-pause"></i>' : s==="Resume" ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-volume-high"></i>'; }
-        
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = loadVoices;
+        function stopReadAloud() { 
+            synth.cancel(); isReading=false; currentWordIndex=0; updateAudioUI("Read"); 
+            document.getElementById('btn-stop').classList.add('hidden'); 
+            document.querySelectorAll('.highlight-current').forEach(x=>x.classList.remove('highlight-current')); 
+        }
+        function updateAudioUI(s) { 
+            document.getElementById('btn-read-text').innerText = s; 
+            document.getElementById('btn-read-icon').innerHTML = s==="Pause" ? '<i class="fa-solid fa-pause"></i>' : s==="Resume" ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-volume-high"></i>'; 
+        }
+
+        // ==========================================
+        // FEATURE 4: LINE 3-MESSAGE SHARING ENGINE (分三則訊息發送到 LINE，包含分數)
+        // ==========================================
+        function generateLineMessages() {
+            if (!courseData || !courseData.title) {
+                return { msg1: "No data", msg2: "No data", msg3: "No data" };
+            }
+
+            const totalScore = (courseData.quiz ? courseData.quiz.length : 10) * 10;
+            const rankTitle = getRankTitle(userScore);
+            const difficulty = courseData.difficulty || "CEFR B2";
+            const grade = courseData.gradeLevel || "Grade 11";
+            
+            const takeaways = (courseData.takeaways && courseData.takeaways.length > 0)
+                ? courseData.takeaways.map((t, i) => `${i+1}. ${t}`).join('\n')
+                : "1. 核心重點已統整於課堂筆記中。";
+
+            const msg1 = `🎓【SAT Smart Reader Pro】學習成果報告 (1/3)
+━━━━━━━━━━━━━━━━━━━
+👤 挑戰者測驗成果
+🏆 總得分：${userScore} / ${totalScore} 分 (${rankTitle})
+📈 難度等級：${grade} (${difficulty})
+
+📖 文章標題：${courseData.title}
+💡 文章核心精華 (Takeaways)：
+${takeaways}
+
+📜【文章全文 (Passage)】
+${courseData.article}
+━━━━━━━━━━━━━━━━━━━
+✨ 來自 SAT Smart Reader Pro AI 虛擬家教`;
+
+            const grammarEn = courseData.grammar.en || (typeof courseData.grammar === 'string' ? courseData.grammar : "No English pattern specified.");
+            const grammarZh = courseData.grammar.zh || "文法詳細解析已包含於英文焦點中。";
+            
+            const msg2 = `🔍【SAT Smart Reader Pro】文法核心解析 (2/3)
+━━━━━━━━━━━━━━━━━━━
+📌 主題：${courseData.title}
+🏆 測驗得分：${userScore} / ${totalScore} 分
+
+🔤 英文焦點句型 (Grammar Focus)：
+${grammarEn}
+
+🇹🇼 繁體中文深度詳解：
+${grammarZh}
+━━━━━━━━━━━━━━━━━━━
+✨ 來自 SAT Smart Reader Pro AI 虛擬家教`;
+
+            let vocabText = "";
+            if (courseData.vocabulary && courseData.vocabulary.length > 0) {
+                vocabText = courseData.vocabulary.map((v, i) => {
+                    return `${i+1}. 📌 ${v.word} [${v.pos || 'n.'}]：${v.trans}
+   • 英文定義：${v.def}
+   • 實戰例句：${v.ex || 'See passage.'}`;
+                }).join('\n\n');
+            } else {
+                vocabText = "無特定單字清單。";
+            }
+
+            const msg3 = `🗂️【SAT Smart Reader Pro】核心單字卡 (3/3)
+━━━━━━━━━━━━━━━━━━━
+📌 主題：${courseData.title}
+🏆 測驗得分：${userScore} / ${totalScore} 分
+
+${vocabText}
+━━━━━━━━━━━━━━━━━━━
+✨ 來自 SAT Smart Reader Pro AI 虛擬家教`;
+
+            return { msg1, msg2, msg3 };
+        }
+
+        function openLineShareModal() {
+            if (!courseData || !courseData.title) {
+                showToast("⚠️ 請先生成或載入課程！");
+                return;
+            }
+            const { msg1, msg2, msg3 } = generateLineMessages();
+            document.getElementById('line-preview-msg-1').innerText = msg1;
+            document.getElementById('line-preview-msg-2').innerText = msg2;
+            document.getElementById('line-preview-msg-3').innerText = msg3;
+            document.getElementById('line-share-modal').classList.remove('hidden');
+        }
+
+        function closeLineShareModal() {
+            document.getElementById('line-share-modal').classList.add('hidden');
+        }
+
+        function switchLineModalTab(tab) {
+            const intentTabBtn = document.getElementById('line-tab-intent');
+            const botTabBtn = document.getElementById('line-tab-bot');
+            const intentView = document.getElementById('line-view-intent');
+            const botView = document.getElementById('line-view-bot');
+            
+            if (tab === 'intent') {
+                intentTabBtn.className = "px-4 py-2 text-xs font-bold rounded-t-lg bg-white text-emerald-700 border-t-2 border-emerald-600 border-x border-slate-200";
+                botTabBtn.className = "px-4 py-2 text-xs font-bold rounded-t-lg text-slate-500 hover:text-slate-800";
+                intentView.classList.remove('hidden');
+                botView.classList.add('hidden');
+            } else {
+                botTabBtn.className = "px-4 py-2 text-xs font-bold rounded-t-lg bg-white text-emerald-700 border-t-2 border-emerald-600 border-x border-slate-200";
+                intentTabBtn.className = "px-4 py-2 text-xs font-bold rounded-t-lg text-slate-500 hover:text-slate-800";
+                botView.classList.remove('hidden');
+                intentView.classList.add('hidden');
+            }
+        }
+
+        function sendLineMessage(index) {
+            const msgs = generateLineMessages();
+            const text = index === 1 ? msgs.msg1 : index === 2 ? msgs.msg2 : msgs.msg3;
+            const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(text)}`;
+            window.open(lineUrl, '_blank');
+            showToast(`🟢 正在喚起 LINE 發送第 ${index} 則訊息...`);
+        }
+
+        function copyLineMessage(index) {
+            const msgs = generateLineMessages();
+            const text = index === 1 ? msgs.msg1 : index === 2 ? msgs.msg2 : msgs.msg3;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`📋 已複製第 ${index} 則 LINE 訊息！`);
+            }).catch(e => alert("複製失敗: " + e.message));
+        }
+
+        function copyAllLineMessages() {
+            const { msg1, msg2, msg3 } = generateLineMessages();
+            const combined = `${msg1}\n\n====================\n\n${msg2}\n\n====================\n\n${msg3}`;
+            navigator.clipboard.writeText(combined).then(() => {
+                showToast("📋 已複製全部 3 則 LINE 訊息！");
+            }).catch(e => alert("複製失敗: " + e.message));
+        }
+
+        async function sendLinePushApi() {
+            const token = document.getElementById('line-channel-token').value.trim();
+            const uid = document.getElementById('line-target-uid').value.trim();
+            const statusEl = document.getElementById('line-push-status');
+            
+            statusEl.classList.remove('hidden');
+            if (!token || !uid) {
+                statusEl.className = "p-3 rounded-lg text-xs font-mono bg-red-50 text-red-700 border border-red-200";
+                statusEl.innerText = "請填寫 LINE Channel Access Token 與 Target User ID。";
+                return;
+            }
+
+            localStorage.setItem('line_channel_token', token);
+            localStorage.setItem('line_target_uid', uid);
+
+            const { msg1, msg2, msg3 } = generateLineMessages();
+            statusEl.className = "p-3 rounded-lg text-xs font-mono bg-blue-50 text-blue-700 border border-blue-200";
+            statusEl.innerText = "正在透過 LINE Messaging API 發送 3 則訊息...";
+
+            try {
+                const payload = {
+                    to: uid,
+                    messages: [
+                        { type: "text", text: msg1 },
+                        { type: "text", text: msg2 },
+                        { type: "text", text: msg3 }
+                    ]
+                };
+
+                const res = await fetch("https://api.line.me/v2/bot/message/push", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    statusEl.className = "p-3 rounded-lg text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200";
+                    statusEl.innerText = `✅ 成功！已向 LINE 用戶 [${uid.substring(0, 8)}...] 傳送 3 則專屬訊息！`;
+                    showToast("✅ LINE 3 則訊息發送成功！");
+                } else {
+                    const errJson = await res.json().catch(() => ({}));
+                    throw new Error(errJson.message || `HTTP ${res.status}: ${res.statusText}`);
+                }
+            } catch (err) {
+                console.warn("[LINE Push API] Direct push failed (CORS or network):", err.message);
+                statusEl.className = "p-3 rounded-lg text-xs font-mono bg-amber-50 text-amber-800 border border-amber-200";
+                statusEl.innerHTML = `⚠️ 瀏覽器端直傳提醒: ${err.message}<br><br>💡 <strong>推薦方式</strong>：請切換至「📱 LINE App 一鍵轉傳」，點擊各則的綠色傳送按鈕，即可直接喚起 LINE App 發送給特定好友！`;
+            }
         }
     </script>
 </body>

@@ -1,0 +1,86 @@
+{
+  "title": "Quantum Computing and Cryptographic Security",
+  "difficulty": "CEFR C1 / Lexile 1250",
+  "gradeLevel": "Grade 11",
+  "takeaways": [
+    "Quantum computers utilize qubits capable of superposition to process complex algorithms exponentially faster.",
+    "Current RSA encryption relies on the computational difficulty of prime factorization, vulnerable to Shor's algorithm.",
+    "Post-quantum cryptography is emerging as the international standard to protect sensitive global data."
+  ],
+  "sourceMeta": "Based on MIT Technology Review & IEEE Spectrum",
+  "article": "Quantum computing represents a fundamental paradigm shift in computational physics and information theory. Unlike classical computers that encode information into binary bits that are strictly 0 or 1, quantum systems leverage quantum bits, or qubits. Through the phenomena of superposition and quantum entanglement, a quantum processor can evaluate vast solution spaces simultaneously.\n\nThis immense computational power poses unprecedented challenges to modern cybersecurity infrastructure. The security of global banking, telecommunications, and government data relies heavily on asymmetric cryptographic protocols such as RSA and Elliptic Curve Cryptography. In theory, a sufficiently powerful quantum computer running Shor's algorithm could factorize large composite primes in polynomial time, rendering existing public-key encryption obsolete.\n\nIn response to this looming technological inflection point, cryptographers worldwide are developing post-quantum cryptographic standards based on lattice-based mathematics and code-based encryption. The transition toward quantum-resilient infrastructure has become one of the foremost imperatives in contemporary digital security.",
+  "vocabulary": [
+    {
+      "word": "paradigm",
+      "pos": "n.",
+      "def": "a typical example or pattern of something; a model or framework",
+      "trans": "典範；範式",
+      "ex": "Quantum mechanics introduced a new paradigm in modern physics."
+    },
+    {
+      "word": "superposition",
+      "pos": "n.",
+      "def": "the ability of a quantum system to be in multiple states at the same time",
+      "trans": "疊加狀態",
+      "ex": "Qubits exhibit superposition until measurement forces a definitive state."
+    },
+    {
+      "word": "entanglement",
+      "pos": "n.",
+      "def": "a quantum phenomenon where particles remain connected regardless of distance",
+      "trans": "量子糾纏",
+      "ex": "Einstein famously referred to quantum entanglement as spooky action at a distance."
+    },
+    {
+      "word": "asymmetric",
+      "pos": "adj.",
+      "def": "having two sides or halves that are not the same; in cryptography, using key pairs",
+      "trans": "非對稱的",
+      "ex": "Asymmetric encryption uses public and private keys for secure communication."
+    },
+    {
+      "word": "obsolete",
+      "pos": "adj.",
+      "def": "no longer produced or used; out of date",
+      "trans": "過時的；淘汰的",
+      "ex": "Legacy encryption methods will quickly become obsolete in the quantum era."
+    },
+    {
+      "word": "resilient",
+      "pos": "adj.",
+      "def": "able to withstand or recover quickly from difficult conditions",
+      "trans": "具韌性的；適應力強的",
+      "ex": "Engineers are building quantum-resilient cryptographic infrastructure."
+    }
+  ],
+  "grammar": {
+    "en": "Unlike classical computers that encode information into binary bits that are strictly 0 or 1, quantum systems leverage quantum bits, or qubits.",
+    "zh": "本句採用「Unlike + 名詞片語（表對比）」搭配「關係代名詞 that 引導的修飾子句」，精準呈現傳統電腦與量子電腦在資料編碼機制上的根本差異。"
+  },
+  "quiz": [
+    {
+      "q": "What primarily distinguishes qubits from classical binary bits in quantum computing?",
+      "opt": [
+        "They use physical switches that cannot be measured.",
+        "They can exist in states of superposition and entanglement.",
+        "They process data only through linear sequential operations.",
+        "They eliminate the need for any mathematical algorithms."
+      ],
+      "ans": 1,
+      "expEn": "Qubits leverage quantum superposition and entanglement, allowing them to evaluate vast solution spaces simultaneously.",
+      "expZh": "Qubit（量子位元）利用疊加態與量子糾纏，能夠同時處理龐大的解空間，這是傳統位元所不具備的特性。"
+    },
+    {
+      "q": "According to the passage, why does quantum computing threaten existing RSA encryption?",
+      "opt": [
+        "It can run Shor's algorithm to solve prime factorization in polynomial time.",
+        "It completely destroys all hardware storage media.",
+        "It eliminates the necessity for internet protocols.",
+        "It replaces software with mechanical gears."
+      ],
+      "ans": 0,
+      "expEn": "Shor's algorithm executed on a quantum computer could factorize large composite primes in polynomial time, breaking RSA encryption.",
+      "expZh": "Shor 演算法可在多項式時間內分解大質數因數，從而瓦解基於質因數分解難度的 RSA 加密機制。"
+    }
+  ]
+}
