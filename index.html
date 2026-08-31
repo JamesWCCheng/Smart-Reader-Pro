@@ -242,10 +242,20 @@
             <div class="space-y-5">
                 <!-- API Key -->
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1.5">Google Gemini API Key</label>
-                    <input type="password" id="apiKey" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl focus:border-brand-600 focus:ring-0 text-slate-900 outline-none text-sm transition" placeholder="貼上您的 Gemini API Key (以 AIza 開頭)">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-sm font-bold text-slate-700">Google Gemini API Key</label>
+                        <span id="api-key-status-badge" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                            <i class="fa-solid fa-circle-check"></i> 已儲存
+                        </span>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="apiKey" oninput="handleApiKeyInput(this)" class="w-full p-3 pr-12 bg-white border-2 border-slate-200 rounded-xl focus:border-brand-600 focus:ring-0 text-slate-900 outline-none text-sm transition" placeholder="貼上您的 Gemini API Key (以 AIza 開頭)">
+                        <button type="button" onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 cursor-pointer" title="顯示/隱藏金鑰">
+                            <i class="fa-solid fa-eye" id="api-key-eye-icon"></i>
+                        </button>
+                    </div>
                     <div class="flex flex-wrap items-center justify-between gap-2 mt-2">
-                        <button onclick="testApiKeyAndListModels()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 transition flex items-center gap-1.5">
+                        <button onclick="testApiKeyAndListModels()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-list-check"></i> 測試金鑰與探索可用模型
                         </button>
                         <a href="https://aistudio.google.com/" target="_blank" class="text-xs text-brand-600 hover:underline flex items-center gap-1">
@@ -874,6 +884,41 @@
         }
 
         // ==========================================
+        // API KEY HELPERS & REPO DEPLOYMENT SAFETY
+        // ==========================================
+        function getCleanApiKey() {
+            const input = document.getElementById('apiKey');
+            let key = (input ? input.value : '') || localStorage.getItem('gemini_api_key') || '';
+            key = key.trim().replace(/^["']|["']$/g, '').replace(/[\s\u200B-\u200D\uFEFF]/g, '');
+            if (key === 'shared_mode') key = '';
+            return key;
+        }
+
+        function handleApiKeyInput(input) {
+            const key = getCleanApiKey();
+            const badge = document.getElementById('api-key-status-badge');
+            if (key && key.length > 20) {
+                localStorage.setItem('gemini_api_key', key);
+                if (badge) badge.classList.remove('hidden');
+            } else {
+                if (badge) badge.classList.add('hidden');
+            }
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            const icon = document.getElementById('api-key-eye-icon');
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        // ==========================================
         // LENGTH SELECTOR
         // ==========================================
         let selectedLength = "Medium";
@@ -907,8 +952,12 @@
             selectLength('Medium');
 
             const savedKey = localStorage.getItem('gemini_api_key');
-            if(savedKey) {
-                document.getElementById('apiKey').value = savedKey;
+            if(savedKey && savedKey !== 'shared_mode') {
+                const keyInput = document.getElementById('apiKey');
+                if (keyInput) keyInput.value = savedKey;
+                const badge = document.getElementById('api-key-status-badge');
+                if (badge) badge.classList.remove('hidden');
+                
                 discoverModels(savedKey).then(models => {
                     if (models && models.length > 0) {
                         updateModelDropdown(models);
@@ -1091,7 +1140,6 @@
                     userScore = 0; answeredCount = 0; comboStreak = 0; climberStep = 0; updateClimber(false);
                     document.getElementById('nav-current-score').innerText = 0;
                     document.getElementById('quiz-summary').classList.add('hidden');
-                    if(!localStorage.getItem('gemini_api_key')) document.getElementById('apiKey').value = "shared_mode";
                     initUI();
                     showToast("⚔️ 挑戰考卷已成功載入！");
                 } catch(err) { alert("檔案讀取錯誤: " + err.message); }
@@ -1164,17 +1212,37 @@
         // GENERATION CONTROLLER (startApp)
         // ==========================================
         async function startApp() {
-            const key = document.getElementById('apiKey').value.trim();
-            if(key) localStorage.setItem('gemini_api_key', key);
+            const key = getCleanApiKey();
+            const input = document.getElementById('apiKey');
+            const errorEl = document.getElementById('error-msg');
+            errorEl.classList.add('hidden');
+
+            if (!key) {
+                if (input) {
+                    input.focus();
+                    input.classList.add('border-red-500', 'animate-card-shake');
+                    setTimeout(() => input.classList.remove('animate-card-shake'), 600);
+                }
+                document.getElementById('error-text').innerHTML = `
+                    <div class="space-y-1 text-xs sm:text-sm">
+                        <div class="font-bold text-red-800">⚠️ 請輸入您的 Google Gemini API Key：</div>
+                        <div>因瀏覽器網域隔離保護，在 GitHub Pages 上使用需在此填入您的 API Key（以 <code>AIza</code> 開頭）。</div>
+                        <div class="pt-1"><a href="https://aistudio.google.com/" target="_blank" class="underline font-bold text-brand-700">👉 點此前往 Google AI Studio 免費取得 API Key</a></div>
+                    </div>
+                `;
+                errorEl.classList.remove('hidden');
+                errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            localStorage.setItem('gemini_api_key', key);
             const model = document.getElementById('modelName').value;
             const grade = document.getElementById('gradeLevel').value;
             const isPreset = document.querySelector('input[name="sourceType"]:checked').value === 'preset';
             let topic = isPreset ? document.getElementById('presetSource').value : document.getElementById('customTopic').value.trim();
             
-            const errorEl = document.getElementById('error-msg');
-            errorEl.classList.add('hidden');
-            if(!key || !topic) { 
-                document.getElementById('error-text').innerText = "請輸入 Gemini API Key 與學習主題 (Topic)。"; 
+            if(!topic) { 
+                document.getElementById('error-text').innerText = "請選擇新聞頻道或輸入自訂主題 (Topic)。"; 
                 errorEl.classList.remove('hidden'); 
                 return; 
             }
@@ -1247,7 +1315,7 @@
                 _lastAction = null;
             } catch(e) { 
                 console.error('startApp failed:', e);
-                document.getElementById('error-text').innerText = `生成錯誤: ${e.message}`; 
+                document.getElementById('error-text').innerHTML = `<div class="text-xs sm:text-sm leading-relaxed">${e.message}</div>`; 
                 errorEl.classList.remove('hidden'); 
             } 
             finally { 
@@ -1278,7 +1346,7 @@
         });
 
         async function translateSelection() {
-            const key = document.getElementById('apiKey').value.trim();
+            const key = getCleanApiKey();
             const model = document.getElementById('modelName').value;
             document.getElementById('popup-trigger').classList.add('hidden');
             document.getElementById('popup-content').classList.remove('hidden');
@@ -1306,6 +1374,11 @@
         ];
 
         async function callGemini(key, model, prompt, expectJSON = true, retryCount = 0, disableFallback = false) {
+            key = (key || '').trim().replace(/^["']|["']$/g, '').replace(/[\s\u200B-\u200D\uFEFF]/g, '');
+            if (!key) {
+                throw new Error("請先輸入有效的 Gemini API Key。");
+            }
+
             try {
                 if (retryCount > 0) {
                     const btnText = document.getElementById('btn-text');
@@ -1317,8 +1390,15 @@
                 }
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 35000);
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(requestBody),
+                
+                // Pass key both in URL query and x-goog-api-key header for maximum compatibility across web environments
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+                    method: 'POST', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': key
+                    }, 
+                    body: JSON.stringify(requestBody),
                     signal: controller.signal
                 });
                 clearTimeout(timeout);
@@ -1328,6 +1408,7 @@
                     const err = new Error(json.error.message || 'Unknown API Error');
                     err.isApiError = true;
                     err.statusCode = json.error.code;
+                    err.statusMessage = json.error.status;
                     throw err;
                 }
                 
@@ -1349,6 +1430,25 @@
             } catch (e) { 
                 console.warn(`Attempt ${retryCount+1} failed (model: ${model}): ${e.message}`);
                 
+                const isAuthError = e.isApiError && (e.statusCode === 400 || e.statusCode === 403) && 
+                    (e.message.toLowerCase().includes('api key') || e.message.toLowerCase().includes('permission') || e.message.toLowerCase().includes('referrer') || e.message.toLowerCase().includes('blocked'));
+
+                if (isAuthError) {
+                    let specificReason = "";
+                    if (e.message.includes("API key not valid") || e.message.includes("API_KEY_INVALID")) {
+                        specificReason = `<strong>🔑 Google API 判定金鑰無效 (API key not valid)：</strong><br>
+                        1. <strong>金鑰是否輸入完整</strong>：請檢查輸入框中的 API Key 是否以 <code>AIza</code> 開頭且無多餘空白。<br>
+                        2. <strong>金鑰可能已被 Google 自動註銷</strong>：若曾將包含 API Key 的程式碼公開 Push 到 GitHub，Google 的自動安全機制會在 1 分鐘內將該金鑰註銷廢除。請前往 <a href="https://aistudio.google.com/" target="_blank" class="underline font-bold text-brand-700">Google AI Studio</a> 免費重新建立一組全新金鑰。<br>
+                        3. <strong>網域限制 (HTTP Referrer)</strong>：若金鑰在 Google Cloud 中限制了網域，請至 Google Cloud Console 將應用程式限制改為「無 (None)」。`;
+                    } else if (e.message.toLowerCase().includes("referrer") || e.message.toLowerCase().includes("blocked")) {
+                        specificReason = `<strong>🛡️ Google API 網域限制阻擋 (Referrer Blocked)：</strong><br>
+                        您的 API Key 在 Google Cloud 設定了網域白名單。請至 Google Cloud Console 將金鑰設定之應用程式限制改為「無 (None)」或加入 <code>https://*.github.io/*</code>。`;
+                    } else {
+                        specificReason = `<strong>金鑰授權錯誤:</strong> ${e.message}`;
+                    }
+                    throw new Error(specificReason);
+                }
+
                 const isModelNotFound = e.isApiError && (e.statusCode === 404 || e.statusCode === 400);
                 const isTransient = !e.isApiError || e.statusCode === 503 || e.statusCode === 429 || e.statusCode >= 500;
                 
@@ -1389,10 +1489,17 @@
         // DYNAMIC MODEL DISCOVERY
         // ==========================================
         async function discoverModels(key) {
+            key = (key || '').trim().replace(/^["']|["']$/g, '').replace(/[\s\u200B-\u200D\uFEFF]/g, '');
+            if (!key) return null;
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`, {
+                    headers: { 'x-goog-api-key': key }
+                });
                 const data = await res.json();
-                if (data.error || !data.models) return null;
+                if (data.error) {
+                    throw new Error(data.error.message || `HTTP ${res.status}`);
+                }
+                if (!data.models) return null;
                 
                 const validModels = data.models
                     .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
@@ -1434,7 +1541,7 @@
                 return topModels;
             } catch (e) {
                 console.warn('[discoverModels] failed:', e.message);
-                return null;
+                throw e;
             }
         }
         
@@ -1471,24 +1578,32 @@
         }
 
         async function testApiKeyAndListModels() {
-            const key = document.getElementById('apiKey').value.trim();
+            const key = getCleanApiKey();
             const outputEl = document.getElementById('models-list-output');
             outputEl.classList.remove('hidden');
             if (!key) {
-                outputEl.innerText = "請先輸入 Gemini API Key。";
+                outputEl.className = "mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-xs font-mono text-red-700 max-h-40 overflow-y-auto";
+                outputEl.innerText = "請先在上方輸入框輸入完整的 Gemini API Key (以 AIza 開頭)。";
                 return;
             }
-            outputEl.innerText = "正在驗證金鑰並探索可用模型...";
+            outputEl.className = "mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs font-mono text-blue-800 max-h-40 overflow-y-auto";
+            outputEl.innerText = "正在連線驗證金鑰並探索可用模型...";
             try {
                 const models = await discoverModels(key);
                 if (models && models.length > 0) {
                     updateModelDropdown(models);
+                    localStorage.setItem('gemini_api_key', key);
+                    const badge = document.getElementById('api-key-status-badge');
+                    if (badge) badge.classList.remove('hidden');
+                    outputEl.className = "mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-mono text-emerald-800 max-h-40 overflow-y-auto";
                     outputEl.innerText = `✅ API Key 驗證成功！可用模型清單：\n${models.join('\n')}\n\n已為您更新下拉選單並設為最佳推薦。`;
                 } else {
-                    outputEl.innerText = "金鑰已連線，使用內建標準推薦清單。";
+                    outputEl.className = "mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs font-mono text-amber-800 max-h-40 overflow-y-auto";
+                    outputEl.innerText = "⚠️ 金鑰可連線，但未能取得動態模型清單，系統將使用內建標準推薦清單。";
                 }
             } catch (err) {
-                outputEl.innerText = `連線失敗: ${err.message}`;
+                outputEl.className = "mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-xs font-mono text-red-700 max-h-40 overflow-y-auto";
+                outputEl.innerText = `❌ 連線失敗: ${err.message}\n\n提示：若此金鑰曾 Push 到公開 GitHub，可能已被 Google 註銷，請至 Google AI Studio 免費重新申請一組新 Key。`;
             }
         }
 
